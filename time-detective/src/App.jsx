@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Welcome from './components/Welcome';
 import Timeline from './components/Timeline';
+import TimelineResult from './components/TimelineResult';
 import ThiefGame from './components/ThiefGame';
+import ThiefGameResult from './components/ThiefGameResult';
 import Result from './components/Result';
 import ProgressBar from './components/ProgressBar';
 import {
@@ -27,11 +29,10 @@ function App() {
       if (sessionData.currentStep > 1) {
         const timeline = loadTimelineData();
         if (timeline.length > 0) {
-          // Timeline 데이터 변환
           setTimelineData({ activities: timeline });
         }
       }
-      if (sessionData.currentStep > 2) {
+      if (sessionData.currentStep > 3) {
         const thiefGame = loadThiefGameData();
         setThiefGameData({ categories: thiefGame });
       }
@@ -48,16 +49,26 @@ function App() {
     setCurrentStep(1);
   };
 
-  // Timeline -> ThiefGame
+  // Timeline -> TimelineResult
   const handleTimelineComplete = (activities, stats) => {
     setTimelineData({ activities, stats });
     setCurrentStep(2);
   };
 
-  // ThiefGame -> Result
+  // TimelineResult -> ThiefGame
+  const handleTimelineResultNext = () => {
+    setCurrentStep(3);
+  };
+
+  // ThiefGame -> ThiefGameResult
   const handleThiefGameComplete = (categories, results) => {
     setThiefGameData({ categories, results });
-    setCurrentStep(3);
+    setCurrentStep(4);
+  };
+
+  // ThiefGameResult -> Result
+  const handleThiefGameResultNext = () => {
+    setCurrentStep(5);
   };
 
   // 처음부터 다시 시작
@@ -83,10 +94,18 @@ function App() {
     duration: 0.5
   };
 
+  // 프로그레스 바 단계 매핑
+  const getProgressStep = () => {
+    if (currentStep === 0) return 0;
+    if (currentStep <= 2) return 1;
+    if (currentStep <= 4) return 2;
+    return 3;
+  };
+
   return (
-    <div className="min-h-screen bg-muji-beige py-8 px-4">
+    <div className="min-h-screen bg-muji-beige">
       {/* 헤더 */}
-      <header className="max-w-6xl mx-auto mb-8">
+      <header className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -111,14 +130,14 @@ function App() {
       </header>
 
       {/* 프로그레스 바 (Welcome 제외) */}
-      {currentStep > 0 && currentStep < 3 && (
-        <div className="max-w-6xl mx-auto mb-8">
-          <ProgressBar currentStep={currentStep} totalSteps={4} />
+      {currentStep > 0 && currentStep < 5 && (
+        <div className="max-w-6xl mx-auto px-4">
+          <ProgressBar currentStep={getProgressStep()} totalSteps={4} />
         </div>
       )}
 
       {/* 메인 콘텐츠 */}
-      <main className="max-w-6xl mx-auto">
+      <main>
         <AnimatePresence mode="wait">
           {currentStep === 0 && (
             <motion.div
@@ -151,6 +170,23 @@ function App() {
 
           {currentStep === 2 && (
             <motion.div
+              key="timeline-result"
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+            >
+              <TimelineResult
+                activities={timelineData?.activities}
+                stats={timelineData?.stats}
+                onNext={handleTimelineResultNext}
+              />
+            </motion.div>
+          )}
+
+          {currentStep === 3 && (
+            <motion.div
               key="thiefgame"
               initial="initial"
               animate="in"
@@ -165,7 +201,24 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
+            <motion.div
+              key="thiefgame-result"
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+            >
+              <ThiefGameResult
+                categories={thiefGameData?.categories}
+                results={thiefGameData?.results}
+                onNext={handleThiefGameResultNext}
+              />
+            </motion.div>
+          )}
+
+          {currentStep === 5 && (
             <motion.div
               key="result"
               initial="initial"
@@ -185,7 +238,7 @@ function App() {
       </main>
 
       {/* 푸터 */}
-      <footer className="max-w-6xl mx-auto mt-12 text-center">
+      <footer className="max-w-6xl mx-auto px-4 py-6 text-center">
         <p className="text-sm text-muji-charcoal opacity-40">
           ADHD 시간관리 프로그램 1회기 - 시간탐정
         </p>

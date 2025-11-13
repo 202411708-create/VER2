@@ -9,7 +9,6 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
   );
   const [availableCards, setAvailableCards] = useState([...TIME_THIEF_CARDS]);
   const [draggedCard, setDraggedCard] = useState(null);
-  const [showResults, setShowResults] = useState(false);
 
   // 자동 저장
   useEffect(() => {
@@ -72,14 +71,17 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
     };
   };
 
-  const results = analyzeResults();
+  const handleNext = () => {
+    const results = analyzeResults();
+    onComplete(categories, results);
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6">
+    <div className="w-full max-w-6xl mx-auto p-6 h-screen flex flex-col">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-6"
       >
         <h2 className="text-heading-lg font-bold text-muji-charcoal mb-2">
           🔍 시간도둑을 잡아라!
@@ -90,7 +92,7 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
       </motion.div>
 
       {/* 진행률 */}
-      <div className="mb-8">
+      <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-muji-charcoal">
             진행률: {placedCards}/{totalCards}
@@ -109,11 +111,11 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
         {/* 사용 가능한 카드 */}
-        <div>
+        <div className="overflow-hidden flex flex-col">
           <h3 className="text-heading font-bold mb-4">시간도둑 카드</h3>
-          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+          <div className="space-y-3 overflow-y-auto flex-1 pr-2">
             <AnimatePresence>
               {availableCards.map((card) => (
                 <motion.div
@@ -156,20 +158,20 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
         </div>
 
         {/* 분류 영역 */}
-        <div className="space-y-4">
+        <div className="space-y-3 overflow-y-auto">
           {/* 빨간 상자 */}
           <div
             onDrop={() => handleDrop('red')}
             onDragOver={handleDragOver}
-            className={`drop-zone border-red-300 bg-red-50 ${
+            className={`drop-zone border-red-300 bg-red-50 min-h-[150px] ${
               draggedCard ? 'active border-red-500' : ''
             }`}
           >
-            <div className="text-center mb-3">
-              <h3 className="text-heading font-bold text-red-600 mb-1">
+            <div className="text-center mb-2">
+              <h3 className="text-lg font-bold text-red-600 mb-1">
                 🔴 많이 빼앗는 도둑
               </h3>
-              <p className="text-sm text-red-500 opacity-80">
+              <p className="text-xs text-red-500 opacity-80">
                 내 시간을 가장 많이 훔쳐가는 행동
               </p>
             </div>
@@ -181,15 +183,15 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white rounded-lg p-3 flex items-center gap-2 shadow-sm"
+                  className="bg-white rounded-lg p-2 flex items-center gap-2 shadow-sm"
                 >
-                  <span className="text-xl">{card.icon}</span>
-                  <span className="flex-1 text-sm font-medium text-muji-charcoal">
+                  <span className="text-lg">{card.icon}</span>
+                  <span className="flex-1 text-xs font-medium text-muji-charcoal">
                     {card.title}
                   </span>
                   <button
                     onClick={() => removeCard(card, 'red')}
-                    className="text-red-500 hover:text-red-700 text-xl"
+                    className="text-red-500 hover:text-red-700 text-lg"
                   >
                     ×
                   </button>
@@ -202,15 +204,15 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
           <div
             onDrop={() => handleDrop('yellow')}
             onDragOver={handleDragOver}
-            className={`drop-zone border-yellow-300 bg-yellow-50 ${
+            className={`drop-zone border-yellow-300 bg-yellow-50 min-h-[150px] ${
               draggedCard ? 'active border-yellow-500' : ''
             }`}
           >
-            <div className="text-center mb-3">
-              <h3 className="text-heading font-bold text-yellow-600 mb-1">
+            <div className="text-center mb-2">
+              <h3 className="text-lg font-bold text-yellow-600 mb-1">
                 🟡 가끔 빼앗는 도둑
               </h3>
-              <p className="text-sm text-yellow-600 opacity-80">
+              <p className="text-xs text-yellow-600 opacity-80">
                 때때로 시간을 낭비하게 만드는 행동
               </p>
             </div>
@@ -222,15 +224,15 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white rounded-lg p-3 flex items-center gap-2 shadow-sm"
+                  className="bg-white rounded-lg p-2 flex items-center gap-2 shadow-sm"
                 >
-                  <span className="text-xl">{card.icon}</span>
-                  <span className="flex-1 text-sm font-medium text-muji-charcoal">
+                  <span className="text-lg">{card.icon}</span>
+                  <span className="flex-1 text-xs font-medium text-muji-charcoal">
                     {card.title}
                   </span>
                   <button
                     onClick={() => removeCard(card, 'yellow')}
-                    className="text-yellow-600 hover:text-yellow-700 text-xl"
+                    className="text-yellow-600 hover:text-yellow-700 text-lg"
                   >
                     ×
                   </button>
@@ -243,15 +245,15 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
           <div
             onDrop={() => handleDrop('green')}
             onDragOver={handleDragOver}
-            className={`drop-zone border-green-300 bg-green-50 ${
+            className={`drop-zone border-green-300 bg-green-50 min-h-[150px] ${
               draggedCard ? 'active border-green-500' : ''
             }`}
           >
-            <div className="text-center mb-3">
-              <h3 className="text-heading font-bold text-green-600 mb-1">
+            <div className="text-center mb-2">
+              <h3 className="text-lg font-bold text-green-600 mb-1">
                 🟢 별로 안 빼앗는 도둑
               </h3>
-              <p className="text-sm text-green-600 opacity-80">
+              <p className="text-xs text-green-600 opacity-80">
                 시간 낭비가 거의 없는 행동
               </p>
             </div>
@@ -263,15 +265,15 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white rounded-lg p-3 flex items-center gap-2 shadow-sm"
+                  className="bg-white rounded-lg p-2 flex items-center gap-2 shadow-sm"
                 >
-                  <span className="text-xl">{card.icon}</span>
-                  <span className="flex-1 text-sm font-medium text-muji-charcoal">
+                  <span className="text-lg">{card.icon}</span>
+                  <span className="flex-1 text-xs font-medium text-muji-charcoal">
                     {card.title}
                   </span>
                   <button
                     onClick={() => removeCard(card, 'green')}
-                    className="text-green-600 hover:text-green-700 text-xl"
+                    className="text-green-600 hover:text-green-700 text-lg"
                   >
                     ×
                   </button>
@@ -282,94 +284,17 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
         </div>
       </div>
 
-      {/* 결과 보기 버튼 */}
+      {/* 다음 버튼 */}
       {placedCards === totalCards && (
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => setShowResults(!showResults)}
-          className="btn-primary w-full mt-8"
+          onClick={handleNext}
+          className="btn-primary w-full mt-4"
         >
-          {showResults ? '결과 숨기기' : '결과 보기'}
+          다음 →
         </motion.button>
       )}
-
-      {/* 결과 화면 */}
-      <AnimatePresence>
-        {showResults && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="card mt-8"
-          >
-            <h3 className="text-heading font-bold mb-6">🎯 분석 결과</h3>
-
-            <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
-              <h4 className="font-bold text-red-600 mb-4 text-lg">
-                🔴 내 시간도둑 TOP {results.topThieves.length}
-              </h4>
-              <div className="space-y-3">
-                {results.topThieves.map((thief, index) => (
-                  <div
-                    key={thief.id}
-                    className="bg-white p-4 rounded-lg flex items-start gap-3"
-                  >
-                    <div className="text-2xl font-bold text-red-500">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-2xl">{thief.icon}</span>
-                        <h5 className="font-bold text-muji-charcoal">
-                          {thief.title}
-                        </h5>
-                      </div>
-                      <p className="text-sm text-muji-charcoal opacity-70">
-                        {thief.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6">
-              <p className="text-lg font-bold text-blue-600">
-                💡 {results.message}
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
-              <div className="text-center p-4 bg-red-50 rounded-lg">
-                <div className="text-3xl font-bold text-red-600 mb-1">
-                  {categories.red.length}
-                </div>
-                <div className="text-sm text-red-600">많이 빼앗는 도둑</div>
-              </div>
-              <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <div className="text-3xl font-bold text-yellow-600 mb-1">
-                  {categories.yellow.length}
-                </div>
-                <div className="text-sm text-yellow-600">가끔 빼앗는 도둑</div>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-3xl font-bold text-green-600 mb-1">
-                  {categories.green.length}
-                </div>
-                <div className="text-sm text-green-600">별로 안 빼앗는 도둑</div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => onComplete(categories, results)}
-              className="btn-primary w-full"
-            >
-              다음 단계로 →
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
