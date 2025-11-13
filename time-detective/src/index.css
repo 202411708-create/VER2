@@ -49,7 +49,7 @@
   .drag-card {
     @apply bg-white rounded-lg p-4 shadow-md cursor-move;
     @apply transition-all duration-200;
-    @apply hover:shadow-xl hover:scale-102;
+    @apply hover:shadow-xl hover:scale-105;
     @apply min-h-touch;
   }
 
