@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 const ThiefGameResult = ({ categories, results, onNext }) => {
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 h-screen flex flex-col justify-center">
+    <div className="w-full max-w-6xl mx-auto p-4 h-full flex flex-col justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -17,7 +17,7 @@ const ThiefGameResult = ({ categories, results, onNext }) => {
       </motion.div>
 
       <div className="card flex-1 overflow-auto">
-        <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
           <h4 className="font-bold text-red-600 mb-4 text-lg">
             🔴 내 시간도둑 TOP {results.topThieves.length}
           </h4>
@@ -46,7 +46,7 @@ const ThiefGameResult = ({ categories, results, onNext }) => {
           </div>
         </div>
 
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6">
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-6">
           <p className="text-lg font-bold text-blue-600">
             💡 {results.message}
           </p>

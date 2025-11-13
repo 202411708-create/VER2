@@ -77,7 +77,7 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 h-screen flex flex-col">
+    <div className="w-full max-w-6xl mx-auto p-4 h-full flex flex-col">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -111,7 +111,7 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
+      <div className="grid lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
         {/* 사용 가능한 카드 */}
         <div className="overflow-hidden flex flex-col">
           <h3 className="text-heading font-bold mb-4">시간도둑 카드</h3>

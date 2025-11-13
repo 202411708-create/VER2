@@ -26,7 +26,7 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6">
+    <div className="w-full max-w-6xl mx-auto p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -119,7 +119,7 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
             <span>시간도둑 분석</span>
           </h3>
 
-          <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
             <h4 className="font-bold text-red-600 mb-4 text-lg">
               🔴 내 시간도둑 TOP {thiefGameData.results.topThieves.length}
             </h4>
@@ -148,7 +148,7 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
             </div>
           </div>
 
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
             <p className="text-lg font-bold text-blue-600">
               💡 {thiefGameData.results.message}
             </p>
@@ -217,7 +217,7 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="mt-8 p-6 border-2 border-dashed border-muji-brown rounded-lg bg-white"
+        className="mt-8 p-4 border-2 border-dashed border-muji-brown rounded-lg bg-white"
       >
         <p className="text-sm text-muji-charcoal opacity-70 text-center">
           💡 <strong>상담자 안내:</strong> 이 결과를 바탕으로 학생과 함께 구체적인 시간관리 전략을 논의해주세요.
