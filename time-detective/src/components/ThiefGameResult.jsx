@@ -1,44 +1,43 @@
 import { motion } from 'framer-motion';
+import { Button, Card, MujiIcon } from './ui';
 
 const ThiefGameResult = ({ categories, results, onNext }) => {
   return (
-    <div className="h-full flex items-center justify-center px-4">
-      <div className="w-full max-w-6xl">
+    <div className="h-full flex items-center justify-center px-6 bg-muji-bg overflow-auto py-8">
+      <div className="w-full max-w-5xl">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4"
+          className="mb-8"
         >
-          <h2 className="text-2xl font-bold text-muji-charcoal mb-1">
-            🎯 시간도둑 분석 결과
+          <h2 className="text-2xl font-normal text-muji-dark mb-2">
+            시간도둑 분석 결과
           </h2>
-          <p className="text-sm text-muji-charcoal opacity-80">
+          <p className="text-body-sm font-light text-muji-light">
             나의 시간을 빼앗는 행동들을 확인해보세요
           </p>
         </motion.div>
 
-        <div className="card">
-          <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-lg mb-4">
-            <h4 className="font-bold text-red-600 mb-3 text-base">
-              🔴 내 시간도둑 TOP {results.topThieves.length}
+        <Card variant="default" padding="lg">
+          <div className="border-l-2 border-muji-mid bg-muji-bg p-6 mb-6">
+            <h4 className="font-normal text-muji-dark mb-4 text-body flex items-center gap-2">
+              <MujiIcon name="detective" size={20} strokeWidth={2} />
+              <span>내 시간도둑 TOP {results.topThieves.length}</span>
             </h4>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {results.topThieves.map((thief, index) => (
                 <div
                   key={thief.id}
-                  className="bg-white p-3 rounded-lg flex items-start gap-2"
+                  className="bg-white border-1 border-muji-beige p-4 flex items-start gap-4"
                 >
-                  <div className="text-xl font-bold text-red-500">
+                  <div className="text-lg font-normal text-muji-mid min-w-[24px]">
                     {index + 1}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-xl">{thief.icon}</span>
-                      <h5 className="font-bold text-muji-charcoal text-sm">
-                        {thief.title}
-                      </h5>
-                    </div>
-                    <p className="text-xs text-muji-charcoal opacity-70">
+                    <h5 className="font-normal text-muji-dark text-body mb-1">
+                      {thief.title}
+                    </h5>
+                    <p className="text-body-sm font-light text-muji-light">
                       {thief.description}
                     </p>
                   </div>
@@ -47,40 +46,45 @@ const ThiefGameResult = ({ categories, results, onNext }) => {
             </div>
           </div>
 
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg mb-4">
-            <p className="text-sm font-bold text-blue-600">
-              💡 {results.message}
+          <div className="border-1 border-muji-light bg-muji-bg p-6 mb-6">
+            <p className="text-body-sm font-light text-muji-mid">
+              {results.message}
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="text-center p-3 bg-red-50 rounded-lg">
-              <div className="text-2xl font-bold text-red-600 mb-1">
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="text-center p-6 bg-muji-bg border-1 border-muji-beige">
+              <div className="text-2xl font-normal text-muji-dark mb-2">
                 {categories.red.length}
               </div>
-              <div className="text-xs text-red-600">많이 빼앗는 도둑</div>
+              <div className="text-xs font-light text-muji-mid">많이 빼앗는 도둑</div>
             </div>
-            <div className="text-center p-3 bg-yellow-50 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600 mb-1">
+            <div className="text-center p-6 bg-muji-bg border-1 border-muji-beige">
+              <div className="text-2xl font-normal text-muji-dark mb-2">
                 {categories.yellow.length}
               </div>
-              <div className="text-xs text-yellow-600">가끔 빼앗는 도둑</div>
+              <div className="text-xs font-light text-muji-mid">가끔 빼앗는 도둑</div>
             </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600 mb-1">
+            <div className="text-center p-6 bg-muji-bg border-1 border-muji-beige">
+              <div className="text-2xl font-normal text-muji-dark mb-2">
                 {categories.green.length}
               </div>
-              <div className="text-xs text-green-600">별로 안 빼앗는 도둑</div>
+              <div className="text-xs font-light text-muji-mid">별로 안 빼앗는 도둑</div>
             </div>
           </div>
 
-          <button
+          <Button
             onClick={onNext}
-            className="btn-primary w-full"
+            variant="filled"
+            size="lg"
+            fullWidth
           >
-            다음 →
-          </button>
-        </div>
+            <span className="flex items-center justify-center gap-2">
+              <span>다음</span>
+              <MujiIcon name="arrow" size={18} strokeWidth={2} />
+            </span>
+          </Button>
+        </Card>
       </div>
     </div>
   );

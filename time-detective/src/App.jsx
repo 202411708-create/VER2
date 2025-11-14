@@ -121,17 +121,16 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-muji-beige flex flex-col">
+    <div className="min-h-screen bg-muji-bg flex flex-col">
       {/* 컴팩트 헤더 */}
-      <header className="flex-shrink-0 bg-muji-beige border-b border-muji-lightbeige">
+      <header className="flex-shrink-0 bg-muji-bg border-b border-muji-beige">
         <div className="max-w-7xl mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             <motion.h1
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-xl font-bold text-muji-charcoal flex items-center gap-2"
+              className="text-xl font-light text-muji-dark flex items-center gap-2"
             >
-              <span>🕵️</span>
               <span>시간탐정</span>
             </motion.h1>
 
@@ -142,7 +141,7 @@ function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   onClick={handleRestart}
-                  className="text-sm text-muji-charcoal opacity-60 hover:opacity-100 transition px-3 py-2"
+                  className="text-sm text-muji-mid font-light opacity-60 hover:opacity-100 transition px-3 py-2"
                 >
                   처음부터 다시
                 </motion.button>
@@ -154,8 +153,8 @@ function App() {
 
       {/* 컴팩트 프로그레스 바 */}
       {currentStep > 0 && currentStep < 7 && (
-        <div className="flex-shrink-0 bg-muji-beige">
-          <div className="max-w-7xl mx-auto px-6 py-3">
+        <div className="flex-shrink-0 bg-muji-bg">
+          <div className="max-w-7xl mx-auto px-6 py-4">
             <ProgressBar currentStep={getProgressStep()} totalSteps={4} />
           </div>
         </div>
@@ -308,9 +307,9 @@ function App() {
       </main>
 
       {/* 컴팩트 푸터 */}
-      <footer className="flex-shrink-0 bg-muji-beige border-t border-muji-lightbeige">
-        <div className="max-w-7xl mx-auto px-6 py-2">
-          <p className="text-xs text-muji-charcoal opacity-40 text-center">
+      <footer className="flex-shrink-0 bg-muji-bg border-t border-muji-beige">
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <p className="text-xs font-light text-muji-light text-center">
             ADHD 시간관리 프로그램 1회기
           </p>
         </div>
