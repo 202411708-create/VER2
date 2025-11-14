@@ -6,7 +6,7 @@ import { Button, Card, MujiIcon, SectionBox } from './ui';
 
 const TimelineResult = ({ activities, stats, onNext }) => {
   const [showUntrackedModal, setShowUntrackedModal] = useState(false);
-  const [untrackedCategory, setUntrackedCategory] = useState(null);
+  const [untrackedCategories, setUntrackedCategories] = useState([]);
 
   // 전체 기록 시간 계산
   const totalHours = stats.reduce((sum, s) => sum + s.value, 0);
@@ -87,11 +87,25 @@ const TimelineResult = ({ activities, stats, onNext }) => {
 
   const insights = generateInsights();
 
-  const handleUntrackedSelect = (category) => {
-    setUntrackedCategory(category);
+  const categoryOptions = [
+    { id: 'commute', label: '이동 시간', icon: 'arrow' },
+    { id: 'idle', label: '멍 때림', icon: 'minus' },
+    { id: 'rest', label: '휴식', icon: 'check' },
+    { id: 'unknown', label: '정확히 기억나지 않음', icon: 'close' },
+  ];
+
+  const handleUntrackedSelect = (categoryId) => {
+    const category = categoryOptions.find(c => c.id === categoryId);
+    if (category && !untrackedCategories.find(c => c.id === categoryId)) {
+      setUntrackedCategories([...untrackedCategories, category]);
+    }
     setShowUntrackedModal(false);
     // TODO: 선택된 카테고리를 localStorage 또는 상태에 저장
-    console.log('Selected untracked category:', category);
+    console.log('Selected untracked categories:', [...untrackedCategories, category]);
+  };
+
+  const handleRemoveCategory = (categoryId) => {
+    setUntrackedCategories(untrackedCategories.filter(c => c.id !== categoryId));
   };
 
   return (
@@ -201,6 +215,33 @@ const TimelineResult = ({ activities, stats, onNext }) => {
                 <p className="text-body-sm font-light text-muji-mid mb-4">
                   이 시간은 휴식, 멍 때림, 이동시간, 또는 기억나지 않는 활동일 수 있습니다.
                 </p>
+
+                {/* 선택된 항목들 표시 */}
+                {untrackedCategories.length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    <AnimatePresence>
+                      {untrackedCategories.map((category) => (
+                        <motion.div
+                          key={category.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-[#E6E3DD] rounded-[4px] text-body-sm font-light text-muji-dark"
+                        >
+                          <MujiIcon name={category.icon} size={16} strokeWidth={1.5} className="text-muji-mid" />
+                          <span>{category.label}</span>
+                          <button
+                            onClick={() => handleRemoveCategory(category.id)}
+                            className="ml-1 text-muji-light hover:text-muji-dark transition-colors"
+                          >
+                            <MujiIcon name="close" size={14} strokeWidth={2} />
+                          </button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+
                 <Button
                   onClick={() => setShowUntrackedModal(true)}
                   variant="secondary"
@@ -273,36 +314,33 @@ const TimelineResult = ({ activities, stats, onNext }) => {
                 </p>
 
                 <div className="space-y-2">
-                  {[
-                    { id: 'commute', label: '이동 시간', icon: 'arrow' },
-                    { id: 'idle', label: '멍 때림', icon: 'minus' },
-                    { id: 'rest', label: '휴식', icon: 'check' },
-                    { id: 'unknown', label: '정확히 기억나지 않음', icon: 'close' },
-                  ].map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => handleUntrackedSelect(category.id)}
-                      className="w-full flex items-center gap-3 p-4 border border-[#E6E3DD] rounded-[4px] hover:border-muji-mid hover:bg-muji-bg transition-all text-left"
-                    >
-                      <MujiIcon name={category.icon} size={20} strokeWidth={1.5} className="text-muji-mid" />
-                      <span className="font-light text-body-sm text-muji-dark">
-                        {category.label}
-                      </span>
-                    </button>
-                  ))}
+                  {categoryOptions.map((category) => {
+                    const isSelected = untrackedCategories.find(c => c.id === category.id);
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => handleUntrackedSelect(category.id)}
+                        disabled={isSelected}
+                        className={`
+                          w-full flex items-center gap-3 p-4 border rounded-[4px] transition-all text-left
+                          ${isSelected
+                            ? 'border-muji-mid bg-muji-beige cursor-not-allowed opacity-50'
+                            : 'border-[#E6E3DD] hover:border-muji-mid hover:bg-muji-bg'}
+                        `}
+                      >
+                        <MujiIcon name={category.icon} size={20} strokeWidth={1.5} className="text-muji-mid" />
+                        <span className="font-light text-body-sm text-muji-dark">
+                          {category.label}
+                        </span>
+                        {isSelected && (
+                          <span className="ml-auto text-xs font-light text-muji-mid">
+                            선택됨
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-
-                {untrackedCategory && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 p-3 bg-muji-beige border border-muji-lightbeige rounded-[4px]"
-                  >
-                    <p className="text-xs font-light text-muji-mid">
-                      선택이 저장되었습니다
-                    </p>
-                  </motion.div>
-                )}
               </motion.div>
             </motion.div>
           )}

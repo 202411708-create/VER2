@@ -309,9 +309,9 @@ const Timeline = ({ onComplete, initialData = [] }) => {
           <div className="overflow-x-auto lg:overflow-x-visible overflow-y-hidden pb-3 mb-4">
             <div className="min-w-[1200px] lg:min-w-0">
               {/* 시간 라벨 */}
-              <div className="grid grid-cols-24 mb-3">
+              <div className="flex mb-3">
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="w-[50px] lg:w-auto text-center text-xs font-light text-muji-light">
+                  <div key={i} className="flex-1 text-center text-xs font-light text-muji-light min-w-[50px]">
                     {i}시
                   </div>
                 ))}
