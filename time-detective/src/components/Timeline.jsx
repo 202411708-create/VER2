@@ -3,13 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ACTIVITY_TYPES, formatTime } from '../utils/activities';
 import { saveTimelineData } from '../utils/storage';
 
-const Timeline = ({ onComplete, initialData = [] }) => {
+const Timeline = ({ onComplete, initialData = [], onEstimationComplete }) => {
   const [showEstimation, setShowEstimation] = useState(initialData.length === 0);
   const [estimations, setEstimations] = useState({
     sleep: 8,
-    study: 3,
-    sns: 2,
+    study: 2,
+    meal: 2,
+    sns: 1,
     game: 1,
+    exercise: 1,
+    other: 2,
   });
   const [activities, setActivities] = useState(initialData);
   const [selectedType, setSelectedType] = useState(null);
@@ -21,6 +24,9 @@ const Timeline = ({ onComplete, initialData = [] }) => {
   }, [activities]);
 
   const handleEstimationSubmit = () => {
+    if (onEstimationComplete) {
+      onEstimationComplete(estimations);
+    }
     setShowEstimation(false);
   };
 
@@ -94,14 +100,14 @@ const Timeline = ({ onComplete, initialData = [] }) => {
 
           <div className="card">
             <div className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {/* 수면 */}
-                <div className="p-4 bg-muji-beige rounded-lg">
+                <div className="p-3 bg-muji-beige rounded-lg">
                   <label className="block mb-2">
-                    <span className="text-2xl mr-2">😴</span>
-                    <span className="font-bold text-muji-charcoal">수면</span>
+                    <span className="text-xl mr-1">😴</span>
+                    <span className="font-bold text-muji-charcoal text-sm">수면</span>
                   </label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <input
                       type="number"
                       min="0"
@@ -109,19 +115,19 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                       step="0.5"
                       value={estimations.sleep}
                       onChange={(e) => handleEstimationChange('sleep', e.target.value)}
-                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
                     />
-                    <span className="text-sm text-muji-charcoal">시간</span>
+                    <span className="text-xs text-muji-charcoal">시간</span>
                   </div>
                 </div>
 
                 {/* 공부 */}
-                <div className="p-4 bg-muji-beige rounded-lg">
+                <div className="p-3 bg-muji-beige rounded-lg">
                   <label className="block mb-2">
-                    <span className="text-2xl mr-2">📚</span>
-                    <span className="font-bold text-muji-charcoal">공부</span>
+                    <span className="text-xl mr-1">📚</span>
+                    <span className="font-bold text-muji-charcoal text-sm">공부</span>
                   </label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <input
                       type="number"
                       min="0"
@@ -129,19 +135,39 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                       step="0.5"
                       value={estimations.study}
                       onChange={(e) => handleEstimationChange('study', e.target.value)}
-                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
                     />
-                    <span className="text-sm text-muji-charcoal">시간</span>
+                    <span className="text-xs text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+
+                {/* 식사 */}
+                <div className="p-3 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-xl mr-1">🍚</span>
+                    <span className="font-bold text-muji-charcoal text-sm">식사</span>
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.meal}
+                      onChange={(e) => handleEstimationChange('meal', e.target.value)}
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-xs text-muji-charcoal">시간</span>
                   </div>
                 </div>
 
                 {/* SNS */}
-                <div className="p-4 bg-muji-beige rounded-lg">
+                <div className="p-3 bg-muji-beige rounded-lg">
                   <label className="block mb-2">
-                    <span className="text-2xl mr-2">📱</span>
-                    <span className="font-bold text-muji-charcoal">SNS</span>
+                    <span className="text-xl mr-1">📱</span>
+                    <span className="font-bold text-muji-charcoal text-sm">SNS</span>
                   </label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <input
                       type="number"
                       min="0"
@@ -149,19 +175,19 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                       step="0.5"
                       value={estimations.sns}
                       onChange={(e) => handleEstimationChange('sns', e.target.value)}
-                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
                     />
-                    <span className="text-sm text-muji-charcoal">시간</span>
+                    <span className="text-xs text-muji-charcoal">시간</span>
                   </div>
                 </div>
 
                 {/* 게임 */}
-                <div className="p-4 bg-muji-beige rounded-lg">
+                <div className="p-3 bg-muji-beige rounded-lg">
                   <label className="block mb-2">
-                    <span className="text-2xl mr-2">🎮</span>
-                    <span className="font-bold text-muji-charcoal">게임</span>
+                    <span className="text-xl mr-1">🎮</span>
+                    <span className="font-bold text-muji-charcoal text-sm">게임</span>
                   </label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <input
                       type="number"
                       min="0"
@@ -169,9 +195,49 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                       step="0.5"
                       value={estimations.game}
                       onChange={(e) => handleEstimationChange('game', e.target.value)}
-                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
                     />
-                    <span className="text-sm text-muji-charcoal">시간</span>
+                    <span className="text-xs text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+
+                {/* 운동 */}
+                <div className="p-3 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-xl mr-1">⚽</span>
+                    <span className="font-bold text-muji-charcoal text-sm">운동</span>
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.exercise}
+                      onChange={(e) => handleEstimationChange('exercise', e.target.value)}
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-xs text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+
+                {/* 기타 */}
+                <div className="p-3 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-xl mr-1">📝</span>
+                    <span className="font-bold text-muji-charcoal text-sm">기타</span>
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.other}
+                      onChange={(e) => handleEstimationChange('other', e.target.value)}
+                      className="w-16 px-2 py-1 text-sm border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-xs text-muji-charcoal">시간</span>
                   </div>
                 </div>
               </div>

@@ -1,19 +1,7 @@
 import { motion } from 'framer-motion';
 import { formatTime } from '../utils/activities';
 
-const TimeAwareness = ({ timelineData, onNext }) => {
-  // 낭비 가능성이 있는 시간 계산 (SNS + 게임)
-  const calculateWastedTime = () => {
-    if (!timelineData || !timelineData.stats) return 0;
-
-    const sns = timelineData.stats.find(s => s.name === 'SNS');
-    const game = timelineData.stats.find(s => s.name === '게임');
-
-    const wastedHours = (sns ? sns.value : 0) + (game ? game.value : 0);
-    return wastedHours;
-  };
-
-  const wastedDaily = calculateWastedTime();
+const TimeAwareness = ({ wastedDaily, onNext }) => {
   const wastedWeekly = wastedDaily * 7;
   const wastedMonthly = wastedDaily * 30;
 
@@ -54,7 +42,7 @@ const TimeAwareness = ({ timelineData, onNext }) => {
               <div className="text-3xl font-bold text-yellow-600 mb-1">
                 {formatTime(Math.floor(wastedDaily), Math.round((wastedDaily % 1) * 60))}
               </div>
-              <div className="text-xs text-yellow-600">SNS + 게임</div>
+              <div className="text-xs text-yellow-600">불필요했던 시간</div>
             </motion.div>
 
             <motion.div
