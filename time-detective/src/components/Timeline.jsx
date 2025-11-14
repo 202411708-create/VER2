@@ -449,9 +449,13 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                           const newStart = parseFloat(e.target.value) || 0;
                           updateStartEndTime(activity.id, newStart, endHour);
                         }}
-                        className="w-16 px-2 py-1 border-1 border-muji-light bg-white font-light text-muji-dark text-center text-sm placeholder-gray-400 focus:border-muji-mid focus:outline-none transition-colors"
+                        className="w-20 h-8 px-3 py-1.5 border border-muji-light bg-white font-normal text-muji-dark text-sm text-center placeholder-gray-400 focus:border-muji-mid focus:outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         placeholder="0"
                         inputMode="decimal"
+                        style={{
+                          color: '#111111',
+                          lineHeight: '1.5'
+                        }}
                       />
                       <span className="text-xs font-light text-muji-light">시</span>
                     </div>
@@ -470,9 +474,13 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                           const newEnd = parseFloat(e.target.value) || 0;
                           updateStartEndTime(activity.id, activity.startHour, newEnd);
                         }}
-                        className="w-16 px-2 py-1 border-1 border-muji-light bg-white font-light text-muji-dark text-center text-sm placeholder-gray-400 focus:border-muji-mid focus:outline-none transition-colors"
+                        className="w-20 h-8 px-3 py-1.5 border border-muji-light bg-white font-normal text-muji-dark text-sm text-center placeholder-gray-400 focus:border-muji-mid focus:outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         placeholder="0"
                         inputMode="decimal"
+                        style={{
+                          color: '#111111',
+                          lineHeight: '1.5'
+                        }}
                       />
                       <span className="text-xs font-light text-muji-light">시</span>
                     </div>
