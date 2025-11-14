@@ -26,12 +26,13 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
-      >
+    <div className="h-full overflow-auto">
+      <div className="w-full max-w-6xl mx-auto p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -224,6 +225,7 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
           다음 회기에서는 목표 설정 및 실행 계획을 수립할 예정입니다.
         </p>
       </motion.div>
+      </div>
     </div>
   );
 };
