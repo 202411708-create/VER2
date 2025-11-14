@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Welcome from './components/Welcome';
 import Timeline from './components/Timeline';
-import TimeEstimationComparison from './components/TimeEstimationComparison';
 import TimelineResult from './components/TimelineResult';
 import ThiefGame from './components/ThiefGame';
 import ThiefGameResult from './components/ThiefGameResult';
@@ -21,7 +20,6 @@ import {
 
 function App() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [estimations, setEstimations] = useState(null);
   const [timelineData, setTimelineData] = useState(null);
   const [thiefGameData, setThiefGameData] = useState(null);
   const [wastedTimes, setWastedTimes] = useState(null);
@@ -40,7 +38,7 @@ function App() {
           setTimelineData({ activities: timeline });
         }
       }
-      if (sessionData.currentStep > 3) {
+      if (sessionData.currentStep > 2) {
         const thiefGame = loadThiefGameData();
         setThiefGameData({ categories: thiefGame });
       }
@@ -54,7 +52,6 @@ function App() {
 
   const handleStart = () => {
     clearAllData();
-    setEstimations(null);
     setTimelineData(null);
     setThiefGameData(null);
     setWastedTimes(null);
@@ -70,38 +67,32 @@ function App() {
     }
   };
 
-  const handleEstimationComplete = (estimationData) => {
-    setEstimations(estimationData);
-  };
-
   const handleTimelineComplete = (activities, stats) => {
     setTimelineData({ activities, stats });
     setCurrentStep(2);
   };
 
-  const handleEstimationComparisonNext = () => setCurrentStep(3);
-  const handleTimelineResultNext = () => setCurrentStep(4);
+  const handleTimelineResultNext = () => setCurrentStep(3);
 
   const handleThiefGameComplete = (categories, results) => {
     setThiefGameData({ categories, results });
-    setCurrentStep(5);
+    setCurrentStep(4);
   };
 
-  const handleThiefGameResultNext = () => setCurrentStep(6);
+  const handleThiefGameResultNext = () => setCurrentStep(5);
 
   const handleWastedTimeComplete = (wastedTimesData, totalWasted) => {
     setWastedTimes(wastedTimesData);
     setWastedDaily(totalWasted);
-    setCurrentStep(7);
+    setCurrentStep(6);
   };
 
-  const handleTimeAwarenessNext = () => setCurrentStep(8);
+  const handleTimeAwarenessNext = () => setCurrentStep(7);
 
   const handleRestart = () => {
     if (window.confirm('모든 데이터가 삭제됩니다. 정말 처음부터 다시 시작하시겠어요?')) {
       clearAllData();
       setCurrentStep(0);
-      setEstimations(null);
       setTimelineData(null);
       setThiefGameData(null);
       setWastedTimes(null);
@@ -123,9 +114,9 @@ function App() {
 
   const getProgressStep = () => {
     if (currentStep === 0) return 0;
-    if (currentStep <= 3) return 1; // Timeline + 비교 + 결과
-    if (currentStep <= 6) return 2; // ThiefGame + 결과 + 낭비 선택
-    if (currentStep <= 8) return 3; // TimeAwareness + Result
+    if (currentStep <= 2) return 1; // Timeline + 결과
+    if (currentStep <= 5) return 2; // ThiefGame + 결과 + 낭비 선택
+    if (currentStep <= 7) return 3; // TimeAwareness + Result
     return 3;
   };
 
@@ -162,7 +153,7 @@ function App() {
       </header>
 
       {/* 컴팩트 프로그레스 바 */}
-      {currentStep > 0 && currentStep < 8 && (
+      {currentStep > 0 && currentStep < 7 && (
         <div className="flex-shrink-0 bg-muji-beige">
           <div className="max-w-7xl mx-auto px-6 py-3">
             <ProgressBar currentStep={getProgressStep()} totalSteps={4} />
@@ -204,31 +195,12 @@ function App() {
             >
               <Timeline
                 onComplete={handleTimelineComplete}
-                onEstimationComplete={handleEstimationComplete}
                 initialData={timelineData?.activities || []}
               />
             </motion.div>
           )}
 
           {currentStep === 2 && (
-            <motion.div
-              key="estimation-comparison"
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-              transition={pageTransition}
-              className="h-full"
-            >
-              <TimeEstimationComparison
-                estimations={estimations}
-                stats={timelineData?.stats}
-                onNext={handleEstimationComparisonNext}
-              />
-            </motion.div>
-          )}
-
-          {currentStep === 3 && (
             <motion.div
               key="timeline-result"
               initial="initial"
@@ -246,7 +218,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <motion.div
               key="thiefgame"
               initial="initial"
@@ -263,7 +235,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <motion.div
               key="thiefgame-result"
               initial="initial"
@@ -281,7 +253,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 6 && (
+          {currentStep === 5 && (
             <motion.div
               key="wasted-time-selection"
               initial="initial"
@@ -298,7 +270,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 7 && (
+          {currentStep === 6 && (
             <motion.div
               key="timeawareness"
               initial="initial"
@@ -315,7 +287,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 8 && (
+          {currentStep === 7 && (
             <motion.div
               key="result"
               initial="initial"
