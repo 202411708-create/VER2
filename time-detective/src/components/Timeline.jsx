@@ -262,7 +262,7 @@ const Timeline = ({ onComplete, initialData = [] }) => {
   };
 
   return (
-    <div className="h-full flex flex-col max-w-7xl mx-auto px-6 py-6 bg-muji-bg">
+    <div className="h-full flex flex-col max-w-[1400px] mx-auto px-6 py-6 bg-muji-bg">
       {/* 헤더 */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
@@ -306,12 +306,12 @@ const Timeline = ({ onComplete, initialData = [] }) => {
 
         <div className="flex-1 flex flex-col min-h-0">
           {/* 타임라인 */}
-          <div className="overflow-x-auto overflow-y-hidden pb-3 mb-4">
-            <div className="min-w-[1440px]">
+          <div className="overflow-x-auto lg:overflow-x-visible overflow-y-hidden pb-3 mb-4">
+            <div className="min-w-[1200px] lg:min-w-0">
               {/* 시간 라벨 */}
-              <div className="flex mb-3">
+              <div className="grid grid-cols-24 mb-3">
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="w-[60px] text-center text-xs font-light text-muji-light">
+                  <div key={i} className="w-[50px] lg:w-auto text-center text-xs font-light text-muji-light">
                     {i}시
                   </div>
                 ))}
