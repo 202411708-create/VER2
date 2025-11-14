@@ -5,6 +5,7 @@ import Timeline from './components/Timeline';
 import TimelineResult from './components/TimelineResult';
 import ThiefGame from './components/ThiefGame';
 import ThiefGameResult from './components/ThiefGameResult';
+import TimeAwareness from './components/TimeAwareness';
 import Result from './components/Result';
 import ProgressBar from './components/ProgressBar';
 import FullscreenToggle from './components/FullscreenToggle';
@@ -70,6 +71,7 @@ function App() {
     setCurrentStep(4);
   };
   const handleThiefGameResultNext = () => setCurrentStep(5);
+  const handleTimeAwarenessNext = () => setCurrentStep(6);
   const handleRestart = () => {
     if (window.confirm('모든 데이터가 삭제됩니다. 정말 처음부터 다시 시작하시겠어요?')) {
       clearAllData();
@@ -95,6 +97,7 @@ function App() {
     if (currentStep === 0) return 0;
     if (currentStep <= 2) return 1;
     if (currentStep <= 4) return 2;
+    if (currentStep <= 6) return 3;
     return 3;
   };
 
@@ -131,7 +134,7 @@ function App() {
       </header>
 
       {/* 컴팩트 프로그레스 바 */}
-      {currentStep > 0 && currentStep < 5 && (
+      {currentStep > 0 && currentStep < 6 && (
         <div className="flex-shrink-0 bg-muji-beige">
           <div className="max-w-7xl mx-auto px-6 py-3">
             <ProgressBar currentStep={getProgressStep()} totalSteps={4} />
@@ -232,6 +235,23 @@ function App() {
           )}
 
           {currentStep === 5 && (
+            <motion.div
+              key="timeawareness"
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+              className="h-full"
+            >
+              <TimeAwareness
+                timelineData={timelineData}
+                onNext={handleTimeAwarenessNext}
+              />
+            </motion.div>
+          )}
+
+          {currentStep === 6 && (
             <motion.div
               key="result"
               initial="initial"

@@ -107,29 +107,25 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
             )}
           </div>
 
-          {/* 성찰 메시지 */}
+          {/* 마무리 메시지 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-muji-beige to-muji-lightbeige rounded-lg p-5 mb-5"
+            className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-5 mb-5"
           >
-            <h3 className="font-bold text-muji-charcoal mb-3 flex items-center gap-2">
-              <span>💭</span>
-              <span>성찰 메시지</span>
+            <h3 className="font-bold text-muji-charcoal mb-3 text-center text-lg">
+              🎉 축하합니다!
             </h3>
-            <div className="space-y-2 text-muji-charcoal text-sm leading-relaxed">
+            <div className="space-y-2 text-muji-charcoal text-sm leading-relaxed text-center">
               <p>
-                오늘 활동을 통해 내가 하루를 어떻게 보내는지, 어떤 행동들이 시간을 빼앗아 가는지 알아봤어요.
+                오늘 시간탐정 활동을 통해 <strong className="text-muji-brown">나의 시간 사용 습관</strong>을 발견했어요.
               </p>
-              <p>
-                시간은 누구에게나 공평하게 24시간이 주어집니다.
-                중요한 것은 <strong className="text-muji-brown">그 시간을 어떻게 사용하느냐</strong>예요.
+              <p className="text-base font-bold text-green-600">
+                💪 이제 변화를 시작할 준비가 되었어요!
               </p>
-              <p>
-                지금부터 작은 변화를 시작해보세요.
-                시간도둑을 하나씩 줄여가다 보면,
-                <strong className="text-muji-brown"> 내가 원하는 일에 더 많은 시간을 쓸 수 있을 거예요!</strong>
+              <p className="text-xs opacity-80">
+                작은 실천부터 시작해보세요. 다음 회기에서 구체적인 계획을 세울 거예요.
               </p>
             </div>
           </motion.div>
