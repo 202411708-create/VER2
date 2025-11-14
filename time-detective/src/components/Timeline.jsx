@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ACTIVITY_TYPES, formatTime } from '../utils/activities';
 import { saveTimelineData } from '../utils/storage';
@@ -7,6 +7,9 @@ import { Button, MujiIcon } from './ui';
 const Timeline = ({ onComplete, initialData = [] }) => {
   const [activities, setActivities] = useState(initialData);
   const [selectedType, setSelectedType] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedActivity, setDraggedActivity] = useState(null);
+  const timelineRef = useRef(null);
 
   useEffect(() => {
     if (activities.length > 0) {
@@ -14,12 +17,44 @@ const Timeline = ({ onComplete, initialData = [] }) => {
     }
   }, [activities]);
 
+  // 시간을 24시간 범위로 정규화 (wrap-around)
+  const normalizeHour = (hour) => {
+    while (hour < 0) hour += 24;
+    while (hour >= 24) hour -= 24;
+    return hour;
+  };
+
+  // 두 시간 사이의 duration 계산 (wrap-around 고려)
+  const calculateDuration = (start, end) => {
+    start = normalizeHour(start);
+    end = normalizeHour(end);
+
+    if (end >= start) {
+      return end - start;
+    } else {
+      // wrap-around case: 예) 22시 → 2시 = 4시간
+      return (24 - start) + end;
+    }
+  };
+
+  // 픽셀 위치를 시간으로 변환
+  const pixelToHour = (clientX, rect) => {
+    const x = clientX - rect.left;
+    const hourFloat = (x / rect.width) * 24;
+    return Math.max(0, Math.min(24, hourFloat));
+  };
+
+  // 시간을 0.5시간 단위로 스냅
+  const snapToHalfHour = (hour) => {
+    return Math.round(hour * 2) / 2;
+  };
+
   const addActivity = (type, startHour, duration = 1) => {
     const newActivity = {
       id: Date.now(),
       type,
-      startHour,
-      duration,
+      startHour: normalizeHour(startHour),
+      duration: Math.max(0.5, duration),
       ...ACTIVITY_TYPES[type.toUpperCase()],
     };
     setActivities([...activities, newActivity]);
@@ -31,8 +66,138 @@ const Timeline = ({ onComplete, initialData = [] }) => {
 
   const updateDuration = (id, newDuration) => {
     setActivities(activities.map(a =>
-      a.id === id ? { ...a, duration: Math.max(0.5, newDuration) } : a
+      a.id === id ? { ...a, duration: Math.max(0.5, Math.min(24, newDuration)) } : a
     ));
+  };
+
+  const updateStartHour = (id, newStartHour) => {
+    setActivities(activities.map(a =>
+      a.id === id ? { ...a, startHour: normalizeHour(newStartHour) } : a
+    ));
+  };
+
+  const updateStartEndTime = (id, newStartHour, newEndHour) => {
+    const start = normalizeHour(newStartHour);
+    const end = normalizeHour(newEndHour);
+    const duration = calculateDuration(start, end);
+
+    if (duration > 0) {
+      setActivities(activities.map(a =>
+        a.id === id ? { ...a, startHour: start, duration } : a
+      ));
+    }
+  };
+
+  // 드래그 시작
+  const handleDragStart = (e) => {
+    if (!selectedType || !timelineRef.current) return;
+
+    const rect = timelineRef.current.getBoundingClientRect();
+    const startHour = snapToHalfHour(pixelToHour(e.clientX, rect));
+
+    setIsDragging(true);
+    setDraggedActivity({
+      startHour,
+      currentHour: startHour,
+      type: selectedType,
+    });
+  };
+
+  // 드래그 중
+  const handleDragMove = (e) => {
+    if (!isDragging || !draggedActivity || !timelineRef.current) return;
+
+    e.preventDefault();
+    const rect = timelineRef.current.getBoundingClientRect();
+    const currentHour = snapToHalfHour(pixelToHour(e.clientX, rect));
+
+    setDraggedActivity({
+      ...draggedActivity,
+      currentHour,
+    });
+  };
+
+  // 드래그 종료
+  const handleDragEnd = (e) => {
+    if (!isDragging || !draggedActivity) return;
+
+    const start = draggedActivity.startHour;
+    const end = draggedActivity.currentHour;
+    const duration = calculateDuration(start, end);
+
+    if (duration >= 0.5) {
+      addActivity(draggedActivity.type, start, duration);
+    }
+
+    setIsDragging(false);
+    setDraggedActivity(null);
+  };
+
+  // 터치 이벤트 핸들러
+  const handleTouchStart = (e) => {
+    if (!selectedType || !timelineRef.current) return;
+
+    const touch = e.touches[0];
+    const rect = timelineRef.current.getBoundingClientRect();
+    const startHour = snapToHalfHour(pixelToHour(touch.clientX, rect));
+
+    setIsDragging(true);
+    setDraggedActivity({
+      startHour,
+      currentHour: startHour,
+      type: selectedType,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || !draggedActivity || !timelineRef.current) return;
+
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = timelineRef.current.getBoundingClientRect();
+    const currentHour = snapToHalfHour(pixelToHour(touch.clientX, rect));
+
+    setDraggedActivity({
+      ...draggedActivity,
+      currentHour,
+    });
+  };
+
+  const handleTouchEnd = (e) => {
+    handleDragEnd(e);
+  };
+
+  // 드래그 중인 활동의 시각적 표현 계산
+  const getDragVisual = () => {
+    if (!draggedActivity) return null;
+
+    const start = draggedActivity.startHour;
+    const end = draggedActivity.currentHour;
+    const duration = calculateDuration(start, end);
+
+    // wrap-around 케이스: 두 개의 바로 분할
+    if (end < start) {
+      return [
+        {
+          startHour: start,
+          duration: 24 - start,
+          isFirst: true,
+        },
+        {
+          startHour: 0,
+          duration: end,
+          isFirst: false,
+        }
+      ];
+    } else {
+      return [
+        {
+          startHour: start,
+          duration,
+          isFirst: true,
+        }
+      ];
+    }
   };
 
   const calculateStats = () => {
@@ -55,6 +220,45 @@ const Timeline = ({ onComplete, initialData = [] }) => {
   const handleNext = () => {
     const stats = calculateStats();
     onComplete(activities, stats);
+  };
+
+  // 활동의 종료 시간 계산
+  const getEndHour = (activity) => {
+    return normalizeHour(activity.startHour + activity.duration);
+  };
+
+  // 활동이 wrap-around 하는지 확인
+  const isWrappedActivity = (activity) => {
+    return (activity.startHour + activity.duration) > 24;
+  };
+
+  // wrap-around 활동을 두 부분으로 분할
+  const getActivitySegments = (activity) => {
+    if (!isWrappedActivity(activity)) {
+      return [
+        {
+          startHour: activity.startHour,
+          duration: activity.duration,
+          isFirst: true,
+        }
+      ];
+    }
+
+    const firstPart = 24 - activity.startHour;
+    const secondPart = activity.duration - firstPart;
+
+    return [
+      {
+        startHour: activity.startHour,
+        duration: firstPart,
+        isFirst: true,
+      },
+      {
+        startHour: 0,
+        duration: secondPart,
+        isFirst: false,
+      }
+    ];
   };
 
   return (
@@ -102,20 +306,36 @@ const Timeline = ({ onComplete, initialData = [] }) => {
 
         <div className="flex-1 flex flex-col min-h-0">
           {/* 타임라인 */}
-          <div className="relative overflow-x-auto pb-3 mb-4">
-            <div className="min-w-[800px]">
+          <div className="overflow-x-auto overflow-y-hidden pb-3 mb-4">
+            <div className="min-w-[1440px]">
               {/* 시간 라벨 */}
               <div className="flex mb-3">
-                {Array.from({ length: 25 }, (_, i) => (
-                  <div key={i} className="flex-1 text-center text-xs font-light text-muji-light">
+                {Array.from({ length: 24 }, (_, i) => (
+                  <div key={i} className="w-[60px] text-center text-xs font-light text-muji-light">
                     {i}시
                   </div>
                 ))}
               </div>
 
               {/* 타임라인 바 */}
-              <div className="relative h-20 bg-muji-beige overflow-hidden">
-                {Array.from({ length: 25 }, (_, i) => (
+              <div
+                ref={timelineRef}
+                className="relative h-20 bg-muji-beige overflow-hidden"
+                onMouseDown={handleDragStart}
+                onMouseMove={handleDragMove}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                style={{
+                  cursor: selectedType ? (isDragging ? 'grabbing' : 'crosshair') : 'default',
+                  userSelect: 'none',
+                  touchAction: 'none',
+                }}
+              >
+                {/* 시간 구분선 */}
+                {Array.from({ length: 24 }, (_, i) => (
                   <div
                     key={i}
                     className="absolute top-0 bottom-0 w-px bg-muji-light opacity-30"
@@ -123,47 +343,74 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                   />
                 ))}
 
+                {/* 기록된 활동들 */}
                 <AnimatePresence>
-                  {activities.map((activity) => (
-                    <motion.div
-                      key={activity.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="absolute top-1 h-[72px] flex flex-col items-center justify-center cursor-pointer group"
-                      style={{
-                        left: `${(activity.startHour / 24) * 100}%`,
-                        width: `${(activity.duration / 24) * 100}%`,
-                        backgroundColor: activity.color,
-                      }}
-                      onClick={() => removeActivity(activity.id)}
-                    >
-                      <span className="text-xs text-white font-light">
-                        {activity.name}
-                      </span>
-                      <span className="text-xs text-white opacity-80 font-light">
-                        {formatTime(Math.floor(activity.duration), Math.round((activity.duration % 1) * 60))}
-                      </span>
-                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
-                      <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
-                        <MujiIcon name="close" size={16} strokeWidth={2} className="text-white" />
-                      </div>
-                    </motion.div>
-                  ))}
+                  {activities.map((activity) => {
+                    const segments = getActivitySegments(activity);
+                    return segments.map((segment, idx) => (
+                      <motion.div
+                        key={`${activity.id}-${idx}`}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="absolute top-1 h-[72px] flex flex-col items-center justify-center cursor-pointer group"
+                        style={{
+                          left: `${(segment.startHour / 24) * 100}%`,
+                          width: `${(segment.duration / 24) * 100}%`,
+                          backgroundColor: activity.color,
+                        }}
+                        onClick={() => removeActivity(activity.id)}
+                      >
+                        {segment.isFirst && (
+                          <>
+                            <span className="text-xs text-white font-light">
+                              {activity.name}
+                            </span>
+                            <span className="text-xs text-white opacity-80 font-light">
+                              {formatTime(Math.floor(activity.duration), Math.round((activity.duration % 1) * 60))}
+                            </span>
+                          </>
+                        )}
+                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
+                        {segment.isFirst && (
+                          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100">
+                            <MujiIcon name="close" size={16} strokeWidth={2} className="text-white" />
+                          </div>
+                        )}
+                      </motion.div>
+                    ));
+                  })}
                 </AnimatePresence>
 
-                {selectedType && (
-                  <div className="absolute inset-0 cursor-crosshair" onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const hour = Math.floor((x / rect.width) * 24);
-                    addActivity(selectedType, hour);
-                  }} />
+                {/* 드래그 중인 활동 미리보기 */}
+                {isDragging && draggedActivity && (
+                  <>
+                    {getDragVisual()?.map((segment, idx) => (
+                      <div
+                        key={`drag-${idx}`}
+                        className="absolute top-1 h-[72px] flex items-center justify-center opacity-60"
+                        style={{
+                          left: `${(segment.startHour / 24) * 100}%`,
+                          width: `${(segment.duration / 24) * 100}%`,
+                          backgroundColor: ACTIVITY_TYPES[draggedActivity.type.toUpperCase()].color,
+                          border: '2px dashed white',
+                        }}
+                      >
+                        {segment.isFirst && (
+                          <span className="text-xs text-white font-light">
+                            {ACTIVITY_TYPES[draggedActivity.type.toUpperCase()].name}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </>
                 )}
               </div>
 
               <p className="text-xs font-light text-muji-light mt-3">
-                {selectedType ? "타임라인을 클릭하여 활동을 추가하세요" : "활동을 선택한 후 타임라인을 클릭하세요"}
+                {selectedType
+                  ? "타임라인을 드래그하여 활동을 추가하세요"
+                  : "활동을 선택한 후 타임라인을 드래그하세요"}
               </p>
             </div>
           </div>
@@ -174,31 +421,78 @@ const Timeline = ({ onComplete, initialData = [] }) => {
               <h4 className="font-normal text-body-sm text-muji-dark mb-3 sticky top-0 bg-white z-10 py-1">
                 기록된 활동
               </h4>
-              {activities.map((activity) => (
-                <motion.div
-                  key={activity.id}
-                  layout
-                  className="flex items-center gap-3 p-3 bg-muji-bg border-1 border-muji-beige"
-                >
-                  <span className="flex-1 font-light text-body-sm text-muji-dark">{activity.name}</span>
-                  <input
-                    type="number"
-                    step="0.5"
-                    min="0.5"
-                    max="24"
-                    value={activity.duration}
-                    onChange={(e) => updateDuration(activity.id, parseFloat(e.target.value))}
-                    className="w-16 px-2 py-1 border-1 border-muji-light bg-white font-light text-muji-dark text-center text-xs focus:border-muji-mid focus:outline-none transition-colors"
-                  />
-                  <span className="text-xs font-light text-muji-mid">시간</span>
-                  <button
-                    onClick={() => removeActivity(activity.id)}
-                    className="px-3 py-1 bg-transparent border-1 border-muji-light text-muji-mid hover:bg-muji-bg transition-colors text-xs font-light"
+              {activities.map((activity) => {
+                const endHour = getEndHour(activity);
+                return (
+                  <motion.div
+                    key={activity.id}
+                    layout
+                    className="flex items-center gap-3 p-3 bg-muji-bg border-1 border-muji-beige"
                   >
-                    삭제
-                  </button>
-                </motion.div>
-              ))}
+                    <div
+                      className="w-3 h-3 flex-shrink-0"
+                      style={{ backgroundColor: activity.color }}
+                    />
+                    <span className="flex-1 font-light text-body-sm text-muji-dark">
+                      {activity.name}
+                    </span>
+
+                    {/* 시작 시간 */}
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="23.5"
+                        value={activity.startHour}
+                        onChange={(e) => {
+                          const newStart = parseFloat(e.target.value) || 0;
+                          updateStartEndTime(activity.id, newStart, endHour);
+                        }}
+                        className="w-16 px-2 py-1 border-1 border-muji-light bg-white font-light text-muji-dark text-center text-sm placeholder-gray-400 focus:border-muji-mid focus:outline-none transition-colors"
+                        placeholder="0"
+                        inputMode="decimal"
+                      />
+                      <span className="text-xs font-light text-muji-light">시</span>
+                    </div>
+
+                    <span className="text-xs font-light text-muji-light">~</span>
+
+                    {/* 종료 시간 */}
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        max="23.5"
+                        value={endHour}
+                        onChange={(e) => {
+                          const newEnd = parseFloat(e.target.value) || 0;
+                          updateStartEndTime(activity.id, activity.startHour, newEnd);
+                        }}
+                        className="w-16 px-2 py-1 border-1 border-muji-light bg-white font-light text-muji-dark text-center text-sm placeholder-gray-400 focus:border-muji-mid focus:outline-none transition-colors"
+                        placeholder="0"
+                        inputMode="decimal"
+                      />
+                      <span className="text-xs font-light text-muji-light">시</span>
+                    </div>
+
+                    {/* 기간 (읽기 전용) */}
+                    <div className="flex items-center gap-1 text-muji-mid">
+                      <span className="text-xs font-light">
+                        ({formatTime(Math.floor(activity.duration), Math.round((activity.duration % 1) * 60))})
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => removeActivity(activity.id)}
+                      className="px-3 py-1 bg-transparent border-1 border-muji-light text-muji-mid hover:bg-muji-bg transition-colors text-xs font-light"
+                    >
+                      삭제
+                    </button>
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </div>
