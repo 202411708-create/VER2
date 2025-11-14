@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const Welcome = ({ onStart }) => {
+const Welcome = ({ onStart, onContinue, hasSavedProgress, savedStep }) => {
   return (
     <div className="h-full flex items-center justify-center px-4">
       <div className="w-full max-w-4xl">
@@ -114,18 +114,45 @@ const Welcome = ({ onStart }) => {
             </ul>
           </motion.div>
 
-          {/* 시작 버튼 */}
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onStart}
-            className="btn-primary w-full md:w-auto px-16 py-4 text-lg"
-          >
-            시작하기 🚀
-          </motion.button>
+          {/* 시작/이어하기 버튼 */}
+          {hasSavedProgress ? (
+            <div className="flex flex-col md:flex-row gap-3 justify-center items-center">
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onContinue}
+                className="btn-primary px-12 py-4 text-lg"
+              >
+                이어하기 ▶
+              </motion.button>
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onStart}
+                className="btn-secondary px-12 py-4 text-lg"
+              >
+                처음부터 시작 🚀
+              </motion.button>
+            </div>
+          ) : (
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onStart}
+              className="btn-primary w-full md:w-auto px-16 py-4 text-lg"
+            >
+              시작하기 🚀
+            </motion.button>
+          )}
 
           {/* 소요 시간 안내 */}
           <motion.p
@@ -134,7 +161,7 @@ const Welcome = ({ onStart }) => {
             transition={{ delay: 1.2 }}
             className="mt-3 text-sm text-muji-charcoal opacity-60"
           >
-            예상 소요 시간: 약 40-50분
+            {hasSavedProgress ? `이전에 진행한 내용이 있어요` : '예상 소요 시간: 약 40-50분'}
           </motion.p>
         </motion.div>
       </div>

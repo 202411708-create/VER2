@@ -20,12 +20,14 @@ function App() {
   const [currentStep, setCurrentStep] = useState(0);
   const [timelineData, setTimelineData] = useState(null);
   const [thiefGameData, setThiefGameData] = useState(null);
+  const [savedStep, setSavedStep] = useState(0);
 
   // 세션 데이터 로드
   useEffect(() => {
     const sessionData = loadSessionData();
     if (sessionData && sessionData.currentStep) {
-      setCurrentStep(sessionData.currentStep);
+      setSavedStep(sessionData.currentStep);
+      // Don't auto-load to step, let user choose to continue
       if (sessionData.currentStep > 1) {
         const timeline = loadTimelineData();
         if (timeline.length > 0) {
@@ -44,7 +46,20 @@ function App() {
     saveSessionData({ currentStep });
   }, [currentStep]);
 
-  const handleStart = () => setCurrentStep(1);
+  const handleStart = () => {
+    clearAllData();
+    setTimelineData(null);
+    setThiefGameData(null);
+    setCurrentStep(1);
+  };
+
+  const handleContinue = () => {
+    if (savedStep > 0) {
+      setCurrentStep(savedStep);
+    } else {
+      setCurrentStep(1);
+    }
+  };
   const handleTimelineComplete = (activities, stats) => {
     setTimelineData({ activities, stats });
     setCurrentStep(2);
@@ -137,7 +152,12 @@ function App() {
               transition={pageTransition}
               className="h-full"
             >
-              <Welcome onStart={handleStart} />
+              <Welcome
+                onStart={handleStart}
+                onContinue={handleContinue}
+                hasSavedProgress={savedStep > 0}
+                savedStep={savedStep}
+              />
             </motion.div>
           )}
 

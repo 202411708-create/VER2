@@ -4,6 +4,13 @@ import { ACTIVITY_TYPES, formatTime } from '../utils/activities';
 import { saveTimelineData } from '../utils/storage';
 
 const Timeline = ({ onComplete, initialData = [] }) => {
+  const [showEstimation, setShowEstimation] = useState(initialData.length === 0);
+  const [estimations, setEstimations] = useState({
+    sleep: 8,
+    study: 3,
+    sns: 2,
+    game: 1,
+  });
   const [activities, setActivities] = useState(initialData);
   const [selectedType, setSelectedType] = useState(null);
 
@@ -12,6 +19,17 @@ const Timeline = ({ onComplete, initialData = [] }) => {
       saveTimelineData(activities);
     }
   }, [activities]);
+
+  const handleEstimationSubmit = () => {
+    setShowEstimation(false);
+  };
+
+  const handleEstimationChange = (type, value) => {
+    setEstimations(prev => ({
+      ...prev,
+      [type]: Math.max(0, Math.min(24, parseFloat(value) || 0))
+    }));
+  };
 
   const addActivity = (type, startHour, duration = 1) => {
     const newActivity = {
@@ -55,6 +73,127 @@ const Timeline = ({ onComplete, initialData = [] }) => {
     const stats = calculateStats();
     onComplete(activities, stats);
   };
+
+  // 시간 추정 화면
+  if (showEstimation) {
+    return (
+      <div className="h-full flex items-center justify-center px-4">
+        <div className="w-full max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <h2 className="text-2xl font-bold text-muji-charcoal mb-2">
+              🤔 어제 얼마나 했을까요?
+            </h2>
+            <p className="text-sm text-muji-charcoal opacity-80">
+              어제 각 활동을 얼마나 했는지 예상해보세요. 나중에 실제와 비교해볼 거예요!
+            </p>
+          </motion.div>
+
+          <div className="card">
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* 수면 */}
+                <div className="p-4 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-2xl mr-2">😴</span>
+                    <span className="font-bold text-muji-charcoal">수면</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.sleep}
+                      onChange={(e) => handleEstimationChange('sleep', e.target.value)}
+                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-sm text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+
+                {/* 공부 */}
+                <div className="p-4 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-2xl mr-2">📚</span>
+                    <span className="font-bold text-muji-charcoal">공부</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.study}
+                      onChange={(e) => handleEstimationChange('study', e.target.value)}
+                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-sm text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+
+                {/* SNS */}
+                <div className="p-4 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-2xl mr-2">📱</span>
+                    <span className="font-bold text-muji-charcoal">SNS</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.sns}
+                      onChange={(e) => handleEstimationChange('sns', e.target.value)}
+                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-sm text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+
+                {/* 게임 */}
+                <div className="p-4 bg-muji-beige rounded-lg">
+                  <label className="block mb-2">
+                    <span className="text-2xl mr-2">🎮</span>
+                    <span className="font-bold text-muji-charcoal">게임</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={estimations.game}
+                      onChange={(e) => handleEstimationChange('game', e.target.value)}
+                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none"
+                    />
+                    <span className="text-sm text-muji-charcoal">시간</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg">
+                <p className="text-sm text-blue-600">
+                  💡 정확하지 않아도 괜찮아요! 나중에 실제 기록과 비교하면서 시간 감각을 키워봐요.
+                </p>
+              </div>
+
+              <button
+                onClick={handleEstimationSubmit}
+                className="btn-primary w-full"
+              >
+                다음: 타임라인 기록하기 →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col max-w-7xl mx-auto px-4 py-4">
