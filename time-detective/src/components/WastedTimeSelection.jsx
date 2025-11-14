@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { formatTime } from '../utils/activities';
+import { Button, Card } from './ui';
 
 const WastedTimeSelection = ({ stats, onComplete }) => {
   // 각 활동의 낭비 시간 초기화 (기본값 0)
@@ -31,54 +32,51 @@ const WastedTimeSelection = ({ stats, onComplete }) => {
   const totalWasted = Object.values(wastedTimes).reduce((sum, val) => sum + val, 0);
 
   return (
-    <div className="h-full flex items-center justify-center px-4">
+    <div className="h-full flex items-center justify-center px-6 bg-muji-bg overflow-auto py-8">
       <div className="w-full max-w-5xl">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4"
+          className="mb-8"
         >
-          <h2 className="text-2xl font-bold text-muji-charcoal mb-1 text-center">
-            🤔 불필요했던 시간은?
+          <h2 className="text-2xl font-normal text-muji-dark mb-2 text-center">
+            불필요했던 시간은?
           </h2>
-          <p className="text-sm text-muji-charcoal opacity-80 text-center">
+          <p className="text-body-sm font-light text-muji-light text-center">
             각 활동 중에서 불필요했다고 생각하는 시간을 선택해주세요
           </p>
         </motion.div>
 
-        <div className="card">
+        <Card variant="default" padding="lg">
           {/* 안내 메시지 */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg mb-5"
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="bg-muji-bg border-1 border-muji-light p-5 mb-6"
           >
-            <p className="text-sm text-blue-600">
-              💡 <strong>예시:</strong> SNS를 3시간 했는데, 그 중 2시간은 불필요했다고 느낀다면 2시간으로 설정하세요.
-              정답은 없어요. 솔직하게 답해주세요!
+            <p className="text-body-sm font-light text-muji-mid">
+              <span className="font-normal">예시:</span> SNS를 3시간 했는데, 그 중 2시간은 불필요했다고 느낀다면 2시간으로 설정하세요.
+              정답은 없습니다. 솔직하게 답해주세요.
             </p>
           </motion.div>
 
           {/* 활동별 선택 */}
-          <div className="space-y-3 mb-5">
+          <div className="space-y-4 mb-6">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.name}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + index * 0.05 }}
-                className="bg-muji-beige rounded-lg p-4"
+                transition={{ delay: 0.15 + index * 0.04, duration: 0.4 }}
+                className="bg-muji-beige border-1 border-muji-lightbeige p-5"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{stat.emoji}</span>
-                    <div>
-                      <span className="font-bold text-muji-charcoal">{stat.name}</span>
-                      <span className="text-sm text-muji-charcoal opacity-70 ml-2">
-                        (전체: {formatTime(Math.floor(stat.value), Math.round((stat.value % 1) * 60))})
-                      </span>
-                    </div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <span className="font-normal text-muji-dark text-body">{stat.name}</span>
+                    <span className="text-body-sm font-light text-muji-mid ml-3">
+                      전체: {formatTime(Math.floor(stat.value), Math.round((stat.value % 1) * 60))}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
@@ -88,23 +86,23 @@ const WastedTimeSelection = ({ stats, onComplete }) => {
                       step="0.5"
                       value={wastedTimes[stat.name]}
                       onChange={(e) => handleWastedTimeChange(stat.name, e.target.value)}
-                      className="w-20 px-3 py-2 border-2 border-muji-lightbeige rounded-lg focus:border-muji-brown focus:outline-none text-center"
+                      className="w-20 px-3 py-2 border-1 border-muji-light bg-white font-light text-muji-dark focus:border-muji-mid focus:outline-none text-center transition-colors"
                     />
-                    <span className="text-sm text-muji-charcoal">시간</span>
+                    <span className="text-body-sm font-light text-muji-mid">시간</span>
                   </div>
                 </div>
 
                 {/* 진행 바 */}
-                <div className="relative h-2 bg-white rounded-full overflow-hidden">
+                <div className="relative h-1 bg-white overflow-hidden">
                   <div
-                    className="absolute h-full bg-gradient-to-r from-yellow-400 to-red-500 rounded-full transition-all duration-300"
+                    className="absolute h-full bg-muji-mid transition-all duration-300"
                     style={{ width: `${(wastedTimes[stat.name] / stat.value) * 100}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-xs text-muji-charcoal opacity-60 mt-1">
+                <div className="flex justify-between text-xs font-light text-muji-light mt-2">
                   <span>0시간</span>
-                  <span className="font-medium text-red-600">
-                    {wastedTimes[stat.name] > 0 && `${((wastedTimes[stat.name] / stat.value) * 100).toFixed(0)}% 낭비`}
+                  <span className="font-normal text-muji-mid">
+                    {wastedTimes[stat.name] > 0 && `${((wastedTimes[stat.name] / stat.value) * 100).toFixed(0)}%`}
                   </span>
                   <span>{formatTime(Math.floor(stat.value), Math.round((stat.value % 1) * 60))}</span>
                 </div>
@@ -114,36 +112,38 @@ const WastedTimeSelection = ({ stats, onComplete }) => {
 
           {/* 총 낭비 시간 */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className={`p-4 rounded-lg mb-4 text-center ${
+            transition={{ delay: 0.4, duration: 0.4 }}
+            className={`p-6 mb-6 text-center border-1 transition-colors ${
               totalWasted > 0
-                ? 'bg-gradient-to-r from-yellow-50 to-red-50 border-2 border-red-300'
-                : 'bg-gray-50 border-2 border-gray-300'
+                ? 'bg-muji-beige border-muji-mid'
+                : 'bg-muji-bg border-muji-light'
             }`}
           >
-            <p className="text-sm text-muji-charcoal opacity-70 mb-1">총 낭비된 시간</p>
-            <p className={`text-3xl font-bold ${
-              totalWasted > 0 ? 'text-red-600' : 'text-gray-400'
+            <p className="text-body-sm font-light text-muji-light mb-2">총 낭비된 시간</p>
+            <p className={`text-3xl font-normal ${
+              totalWasted > 0 ? 'text-muji-dark' : 'text-muji-light'
             }`}>
               {formatTime(Math.floor(totalWasted), Math.round((totalWasted % 1) * 60))}
             </p>
             {totalWasted > 0 && (
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-xs font-light text-muji-mid mt-2">
                 하루 기준 ≈ {((totalWasted / 24) * 100).toFixed(1)}%
               </p>
             )}
           </motion.div>
 
-          <button
+          <Button
             onClick={handleNext}
-            className="btn-primary w-full"
+            variant="filled"
+            size="lg"
+            fullWidth
             disabled={totalWasted === 0}
           >
-            {totalWasted > 0 ? '다음 →' : '낭비된 시간을 선택해주세요'}
-          </button>
-        </div>
+            {totalWasted > 0 ? '다음' : '낭비된 시간을 선택해주세요'}
+          </Button>
+        </Card>
       </div>
     </div>
   );
