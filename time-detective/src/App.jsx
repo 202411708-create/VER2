@@ -21,6 +21,7 @@ import {
 function App() {
   const [currentStep, setCurrentStep] = useState(0);
   const [timelineData, setTimelineData] = useState(null);
+  const [suspiciousData, setSuspiciousData] = useState([]);
   const [thiefGameData, setThiefGameData] = useState(null);
   const [wastedTimes, setWastedTimes] = useState(null);
   const [wastedDaily, setWastedDaily] = useState(0);
@@ -53,6 +54,7 @@ function App() {
   const handleStart = () => {
     clearAllData();
     setTimelineData(null);
+    setSuspiciousData([]);
     setThiefGameData(null);
     setWastedTimes(null);
     setWastedDaily(0);
@@ -67,19 +69,20 @@ function App() {
     }
   };
 
-  const handleTimelineComplete = (activities, stats) => {
+  const handleTimelineComplete = (activities, stats, suspicious) => {
     setTimelineData({ activities, stats });
-    setCurrentStep(2);
+    setSuspiciousData(suspicious || []);
+    setCurrentStep(2); // ThiefGame으로 바로 이동
   };
-
-  const handleTimelineResultNext = () => setCurrentStep(3);
 
   const handleThiefGameComplete = (categories, results) => {
     setThiefGameData({ categories, results });
-    setCurrentStep(4);
+    setCurrentStep(3); // ThiefGameResult로 이동
   };
 
-  const handleThiefGameResultNext = () => setCurrentStep(5);
+  const handleThiefGameResultNext = () => setCurrentStep(4); // TimelineResult로 이동
+
+  const handleTimelineResultNext = () => setCurrentStep(5); // WastedTimeSelection으로 이동
 
   const handleWastedTimeComplete = (wastedTimesData, totalWasted) => {
     setWastedTimes(wastedTimesData);
@@ -114,10 +117,11 @@ function App() {
 
   const getProgressStep = () => {
     if (currentStep === 0) return 0;
-    if (currentStep <= 2) return 1; // Timeline + 결과
-    if (currentStep <= 5) return 2; // ThiefGame + 결과 + 낭비 선택
-    if (currentStep <= 7) return 3; // TimeAwareness + Result
-    return 3;
+    if (currentStep === 1) return 1; // Timeline
+    if (currentStep <= 3) return 2; // ThiefGame + 결과
+    if (currentStep <= 5) return 3; // TimelineResult + 낭비 선택
+    if (currentStep <= 7) return 4; // TimeAwareness + Result
+    return 4;
   };
 
   return (
@@ -155,7 +159,7 @@ function App() {
       {currentStep > 0 && currentStep < 7 && (
         <div className="flex-shrink-0 bg-muji-bg">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <ProgressBar currentStep={getProgressStep()} totalSteps={4} />
+            <ProgressBar currentStep={getProgressStep()} totalSteps={5} />
           </div>
         </div>
       )}
@@ -201,24 +205,6 @@ function App() {
 
           {currentStep === 2 && (
             <motion.div
-              key="timeline-result"
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-              transition={pageTransition}
-              className="h-full"
-            >
-              <TimelineResult
-                activities={timelineData?.activities}
-                stats={timelineData?.stats}
-                onNext={handleTimelineResultNext}
-              />
-            </motion.div>
-          )}
-
-          {currentStep === 3 && (
-            <motion.div
               key="thiefgame"
               initial="initial"
               animate="in"
@@ -230,11 +216,12 @@ function App() {
               <ThiefGame
                 onComplete={handleThiefGameComplete}
                 initialData={thiefGameData?.categories}
+                suspiciousActivities={suspiciousData}
               />
             </motion.div>
           )}
 
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <motion.div
               key="thiefgame-result"
               initial="initial"
@@ -248,6 +235,24 @@ function App() {
                 categories={thiefGameData?.categories}
                 results={thiefGameData?.results}
                 onNext={handleThiefGameResultNext}
+              />
+            </motion.div>
+          )}
+
+          {currentStep === 4 && (
+            <motion.div
+              key="timeline-result"
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+              className="h-full"
+            >
+              <TimelineResult
+                activities={timelineData?.activities}
+                stats={timelineData?.stats}
+                onNext={handleTimelineResultNext}
               />
             </motion.div>
           )}

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TIME_THIEF_CARDS } from '../utils/activities';
+import { TIME_THIEF_CARDS, formatTime } from '../utils/activities';
 import { saveThiefGameData } from '../utils/storage';
 import { Button, MujiIcon, SectionBox, TimeThiefCard } from './ui';
 
-const ThiefGame = ({ onComplete, initialData = null }) => {
+const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }) => {
   const [categories, setCategories] = useState(
     initialData || { red: [], yellow: [], green: [] }
   );
@@ -93,6 +93,42 @@ const ThiefGame = ({ onComplete, initialData = null }) => {
             나의 시간을 훔쳐가는 행동들을 분류해보세요
           </p>
         </motion.div>
+
+        {/* 선택된 의심 활동 표시 */}
+        {suspiciousActivities.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <SectionBox
+              title="선택한 시간은 어떤 시간도둑과 관련될까?"
+              subtitle={`${suspiciousActivities.length}개의 활동을 체크하셨습니다`}
+              variant="default"
+              padding="default"
+            >
+              <div className="space-y-2">
+                {suspiciousActivities.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center gap-3 p-3 bg-white border border-[#E6E3DD] rounded-[4px]"
+                  >
+                    <div
+                      className="w-3 h-3 flex-shrink-0 rounded-full"
+                      style={{ backgroundColor: activity.color }}
+                    />
+                    <span className="flex-1 font-light text-sm text-[#111111]">
+                      {activity.name}
+                    </span>
+                    <span className="text-xs font-light text-[#6B6B6B]">
+                      {formatTime(Math.floor(activity.duration), Math.round((activity.duration % 1) * 60))}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </SectionBox>
+          </motion.div>
+        )}
 
         {/* 진행률 */}
         <div className="mb-8">

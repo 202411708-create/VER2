@@ -9,6 +9,7 @@ const Timeline = ({ onComplete, initialData = [] }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedActivity, setDraggedActivity] = useState(null);
+  const [suspiciousActivities, setSuspiciousActivities] = useState([]);
   const timelineRef = useRef(null);
 
   useEffect(() => {
@@ -217,9 +218,18 @@ const Timeline = ({ onComplete, initialData = [] }) => {
     return Object.values(stats);
   };
 
+  const toggleSuspicious = (activityId) => {
+    setSuspiciousActivities(prev =>
+      prev.includes(activityId)
+        ? prev.filter(id => id !== activityId)
+        : [...prev, activityId]
+    );
+  };
+
   const handleNext = () => {
     const stats = calculateStats();
-    onComplete(activities, stats);
+    const suspiciousData = activities.filter(a => suspiciousActivities.includes(a.id));
+    onComplete(activities, stats, suspiciousData);
   };
 
   // 활동의 종료 시간 계산
@@ -418,17 +428,41 @@ const Timeline = ({ onComplete, initialData = [] }) => {
           {/* 활동 목록 */}
           {activities.length > 0 && (
             <div className="flex-1 min-h-0 overflow-auto space-y-2">
-              <h4 className="font-normal text-body-sm text-muji-dark mb-3 sticky top-0 bg-white z-10 py-1">
-                기록된 활동
-              </h4>
+              <div className="sticky top-0 bg-white z-10 py-2 border-b border-muji-beige mb-3">
+                <h4 className="font-normal text-body-sm text-muji-dark mb-1">
+                  기록된 활동
+                </h4>
+                <p className="text-xs font-light text-muji-light">
+                  낭비했다고 느끼는 시간은 체크해주세요
+                </p>
+              </div>
               {activities.map((activity) => {
                 const endHour = getEndHour(activity);
+                const isSuspicious = suspiciousActivities.includes(activity.id);
                 return (
                   <motion.div
                     key={activity.id}
                     layout
-                    className="flex items-center gap-3 p-3 bg-muji-bg border-1 border-muji-beige"
+                    className={`flex items-center gap-3 p-3 border-1 transition-colors ${
+                      isSuspicious
+                        ? 'bg-[#FFF5F5] border-[#FFD6D6]'
+                        : 'bg-muji-bg border-muji-beige'
+                    }`}
                   >
+                    {/* 의심 체크박스 */}
+                    <button
+                      onClick={() => toggleSuspicious(activity.id)}
+                      className={`w-5 h-5 flex-shrink-0 border-1 rounded-[2px] flex items-center justify-center transition-all ${
+                        isSuspicious
+                          ? 'bg-muji-mid border-muji-mid'
+                          : 'bg-white border-muji-light hover:border-muji-mid'
+                      }`}
+                    >
+                      {isSuspicious && (
+                        <MujiIcon name="check" size={14} strokeWidth={2} className="text-white" />
+                      )}
+                    </button>
+
                     <div
                       className="w-3 h-3 flex-shrink-0"
                       style={{ backgroundColor: activity.color }}
