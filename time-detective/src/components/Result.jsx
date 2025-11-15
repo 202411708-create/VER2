@@ -37,10 +37,10 @@ const Result = ({ timelineData, thiefGameData, onRestart }) => {
             <MujiIcon name="check" size={48} strokeWidth={1.5} className="text-muji-mid" />
           </div>
           <h2 className="text-3xl font-normal text-muji-dark mb-2">
-            시간탐정 미션 완료
+            내 하루의 흐름을 돌아보며
           </h2>
           <p className="text-body-sm font-light text-muji-light">
-            나의 시간 사용 습관을 잘 분석했습니다
+            시간탐정 1회기를 완료했습니다
           </p>
         </motion.div>
 
