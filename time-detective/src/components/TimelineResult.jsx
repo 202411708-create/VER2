@@ -272,6 +272,19 @@ const TimelineResult = ({ activities, stats, onNext }) => {
             </div>
           )}
 
+          {/* Transition to ThiefGame */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="bg-muji-bg border-1 border-muji-light p-6 mb-6"
+          >
+            <p className="text-body-sm font-light text-muji-mid text-center leading-relaxed">
+              시간 사용 패턴을 확인했습니다.<br />
+              다음 단계에서는 <span className="font-normal text-muji-dark">시간을 낭비하게 만든 원인</span>을 찾아봅시다.
+            </p>
+          </motion.div>
+
           <Button onClick={onNext} variant="filled" size="lg" fullWidth>
             <span className="flex items-center justify-center gap-2">
               <span>다음</span>

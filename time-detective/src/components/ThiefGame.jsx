@@ -84,7 +84,7 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
           <h2 className="text-2xl font-normal text-[#111111] mb-2">
             시간도둑을 잡아라
@@ -99,13 +99,13 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            className="mb-6"
           >
             <SectionBox
-              title="선택한 시간은 어떤 시간도둑과 관련될까?"
-              subtitle={`${suspiciousActivities.length}개의 활동을 체크하셨습니다`}
+              title="Timeline에서 체크하신 활동"
+              subtitle="참고하여 시간도둑을 찾아보세요"
               variant="default"
-              padding="default"
+              padding="small"
             >
               <div className="space-y-2">
                 {suspiciousActivities.map((activity) => (
@@ -131,7 +131,7 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
         )}
 
         {/* 진행률 */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-light text-[#333333]">
               진행률: {placedCards}/{totalCards}
@@ -156,7 +156,7 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
             title="시간도둑 카드"
             subtitle="카드를 드래그하여 분류해보세요"
             variant="white"
-            padding="large"
+            padding="default"
           >
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
               <AnimatePresence>
@@ -186,19 +186,19 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
           </SectionBox>
 
           {/* 분류 영역 */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* 많이 빼앗는 도둑 */}
             <SectionBox
               title="많이 빼앗는 도둑"
               subtitle="내 시간을 가장 많이 훔쳐가는 행동"
               variant="default"
-              padding="large"
+              padding="default"
             >
               <div
                 onDrop={() => handleDrop('red')}
                 onDragOver={handleDragOver}
                 className={`
-                  min-h-[120px]
+                  min-h-[100px]
                   p-4
                   border-2 border-dashed
                   rounded-[4px]
@@ -230,13 +230,13 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
               title="가끔 빼앗는 도둑"
               subtitle="때때로 시간을 낭비하게 만드는 행동"
               variant="default"
-              padding="large"
+              padding="default"
             >
               <div
                 onDrop={() => handleDrop('yellow')}
                 onDragOver={handleDragOver}
                 className={`
-                  min-h-[120px]
+                  min-h-[100px]
                   p-4
                   border-2 border-dashed
                   rounded-[4px]
@@ -268,13 +268,13 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
               title="별로 안 빼앗는 도둑"
               subtitle="시간 낭비가 거의 없는 행동"
               variant="default"
-              padding="large"
+              padding="default"
             >
               <div
                 onDrop={() => handleDrop('green')}
                 onDragOver={handleDragOver}
                 className={`
-                  min-h-[120px]
+                  min-h-[100px]
                   p-4
                   border-2 border-dashed
                   rounded-[4px]
@@ -308,7 +308,7 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8"
+            className="mt-6"
           >
             <Button onClick={handleNext} variant="filled" size="lg" fullWidth>
               <span className="flex items-center justify-center gap-2">

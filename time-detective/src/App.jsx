@@ -33,13 +33,13 @@ function App() {
     if (sessionData && sessionData.currentStep) {
       setSavedStep(sessionData.currentStep);
       // Don't auto-load to step, let user choose to continue
-      if (sessionData.currentStep > 1) {
+      if (sessionData.currentStep >= 2) {
         const timeline = loadTimelineData();
         if (timeline.length > 0) {
           setTimelineData({ activities: timeline });
         }
       }
-      if (sessionData.currentStep > 2) {
+      if (sessionData.currentStep >= 4) {
         const thiefGame = loadThiefGameData();
         setThiefGameData({ categories: thiefGame });
       }
@@ -72,17 +72,17 @@ function App() {
   const handleTimelineComplete = (activities, stats, suspicious) => {
     setTimelineData({ activities, stats });
     setSuspiciousData(suspicious || []);
-    setCurrentStep(2); // ThiefGame으로 바로 이동
+    setCurrentStep(2); // TimelineResult로 이동
   };
+
+  const handleTimelineResultNext = () => setCurrentStep(3); // ThiefGame으로 이동
 
   const handleThiefGameComplete = (categories, results) => {
     setThiefGameData({ categories, results });
-    setCurrentStep(3); // ThiefGameResult로 이동
+    setCurrentStep(4); // ThiefGameResult로 이동
   };
 
-  const handleThiefGameResultNext = () => setCurrentStep(4); // TimelineResult로 이동
-
-  const handleTimelineResultNext = () => setCurrentStep(5); // WastedTimeSelection으로 이동
+  const handleThiefGameResultNext = () => setCurrentStep(5); // WastedTimeSelection으로 이동
 
   const handleWastedTimeComplete = (wastedTimesData, totalWasted) => {
     setWastedTimes(wastedTimesData);
@@ -118,9 +118,9 @@ function App() {
   const getProgressStep = () => {
     if (currentStep === 0) return 0;
     if (currentStep === 1) return 1; // Timeline
-    if (currentStep <= 3) return 2; // ThiefGame + 결과
-    if (currentStep <= 5) return 3; // TimelineResult + 낭비 선택
-    if (currentStep <= 7) return 4; // TimeAwareness + Result
+    if (currentStep === 2) return 2; // TimelineResult
+    if (currentStep <= 4) return 3; // ThiefGame + 결과
+    if (currentStep <= 7) return 4; // WastedTimeSelection + TimeAwareness + Result
     return 4;
   };
 
@@ -205,6 +205,24 @@ function App() {
 
           {currentStep === 2 && (
             <motion.div
+              key="timeline-result"
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+              className="h-full"
+            >
+              <TimelineResult
+                activities={timelineData?.activities}
+                stats={timelineData?.stats}
+                onNext={handleTimelineResultNext}
+              />
+            </motion.div>
+          )}
+
+          {currentStep === 3 && (
+            <motion.div
               key="thiefgame"
               initial="initial"
               animate="in"
@@ -221,7 +239,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <motion.div
               key="thiefgame-result"
               initial="initial"
@@ -235,24 +253,6 @@ function App() {
                 categories={thiefGameData?.categories}
                 results={thiefGameData?.results}
                 onNext={handleThiefGameResultNext}
-              />
-            </motion.div>
-          )}
-
-          {currentStep === 4 && (
-            <motion.div
-              key="timeline-result"
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-              transition={pageTransition}
-              className="h-full"
-            >
-              <TimelineResult
-                activities={timelineData?.activities}
-                stats={timelineData?.stats}
-                onNext={handleTimelineResultNext}
               />
             </motion.div>
           )}
