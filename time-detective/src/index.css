@@ -6,9 +6,10 @@
 
 @layer base {
   html, body, #root {
-    height: 100%;
+    height: 100vh;
     margin: 0;
     padding: 0;
+    overflow: hidden;
   }
 
   body {
@@ -23,6 +24,54 @@
 
   button {
     @apply min-w-touch min-h-touch;
+  }
+
+  /* App root container */
+  .app-root {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Main content area should not grow beyond viewport */
+  .main-content {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Timeline specific optimizations */
+  .timeline-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .timeline-panel {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .timeline-area {
+    flex: 1;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* Prevent drag operations from affecting layout */
+  .dnd-overlay {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
   }
 }
 

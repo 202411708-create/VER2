@@ -1,14 +1,17 @@
+import { debouncedStorageWrite } from './debounce';
+
 // LocalStorage 키 상수
 const STORAGE_KEYS = {
   TIMELINE_DATA: 'timeDetective_timeline',
   THIEF_GAME_DATA: 'timeDetective_thiefGame',
   SESSION_DATA: 'timeDetective_session',
+  ZOOM_LEVEL: 'timeDetective_zoomLevel',
 };
 
-// 타임라인 데이터 저장
+// 타임라인 데이터 저장 (debounced for performance)
 export const saveTimelineData = (activities) => {
   try {
-    localStorage.setItem(STORAGE_KEYS.TIMELINE_DATA, JSON.stringify(activities));
+    debouncedStorageWrite(STORAGE_KEYS.TIMELINE_DATA, activities, 500);
     return true;
   } catch (error) {
     console.error('타임라인 데이터 저장 실패:', error);
@@ -100,5 +103,26 @@ export const exportData = () => {
   } catch (error) {
     console.error('데이터 내보내기 실패:', error);
     return null;
+  }
+};
+
+// Zoom level 저장 및 불러오기
+export const saveZoomLevel = (pxPerHour) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.ZOOM_LEVEL, JSON.stringify(pxPerHour));
+    return true;
+  } catch (error) {
+    console.error('줌 레벨 저장 실패:', error);
+    return false;
+  }
+};
+
+export const loadZoomLevel = () => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.ZOOM_LEVEL);
+    return data ? JSON.parse(data) : 50; // Default 50px per hour
+  } catch (error) {
+    console.error('줌 레벨 불러오기 실패:', error);
+    return 50;
   }
 };

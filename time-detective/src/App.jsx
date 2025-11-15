@@ -125,7 +125,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-muji-bg flex flex-col">
+    <div className="app-root bg-muji-bg">
       {/* 컴팩트 헤더 */}
       <header className="flex-shrink-0 bg-muji-bg border-b border-muji-beige">
         <div className="max-w-7xl mx-auto px-6 py-3">
@@ -165,7 +165,7 @@ function App() {
       )}
 
       {/* 메인 콘텐츠 - 남은 공간 모두 사용 */}
-      <main className="flex-1 overflow-hidden">
+      <main className="main-content">
         <AnimatePresence mode="wait">
           {currentStep === 0 && (
             <motion.div
