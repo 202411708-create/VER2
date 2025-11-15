@@ -277,7 +277,7 @@ const Timeline = ({ onComplete, initialData = [] }) => {
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
+        className="mb-6 p-4 bg-white rounded-sm"
       >
         <h2 className="text-2xl font-normal text-muji-dark mb-2">
           어제는 어떻게 보냈을까?
@@ -288,16 +288,16 @@ const Timeline = ({ onComplete, initialData = [] }) => {
       </motion.div>
 
       {/* 활동 선택 버튼 */}
-      <div className="grid grid-cols-7 gap-2 mb-6">
+      <div className="grid grid-cols-7 gap-2 mb-6 p-4 bg-[#FAFAF8] rounded-sm">
         {Object.values(ACTIVITY_TYPES).map((type) => (
           <motion.button
             key={type.id}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedType(type.id)}
-            className={`p-3 font-light transition-all border-1 ${
+            className={`p-3 font-light transition-all border-1 rounded-sm ${
               selectedType === type.id
-                ? 'border-muji-mid'
+                ? 'border-muji-mid shadow-muji'
                 : 'border-muji-beige'
             }`}
             style={{
@@ -311,17 +311,17 @@ const Timeline = ({ onComplete, initialData = [] }) => {
       </div>
 
       {/* 타임라인 카드 */}
-      <div className="bg-white border-1 border-muji-beige p-6 flex-1 overflow-hidden flex flex-col min-h-0">
+      <div className="bg-white border-1 border-muji-beige p-6 flex-1 overflow-hidden flex flex-col min-h-0 rounded-sm shadow-muji">
         <h3 className="text-body font-normal text-muji-dark mb-4">24시간 타임라인</h3>
 
         <div className="flex-1 flex flex-col min-h-0">
           {/* 타임라인 */}
-          <div className="overflow-x-auto lg:overflow-x-visible overflow-y-hidden pb-3 mb-4">
-            <div className="min-w-[1200px] lg:min-w-0">
+          <div className="overflow-y-hidden pb-3 mb-4">
+            <div>
               {/* 시간 라벨 */}
               <div className="flex mb-3">
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="flex-1 text-center text-xs font-light text-muji-light min-w-[50px]">
+                  <div key={i} className="flex-1 text-center text-xs font-light text-muji-light">
                     {i}시
                   </div>
                 ))}
@@ -330,7 +330,7 @@ const Timeline = ({ onComplete, initialData = [] }) => {
               {/* 타임라인 바 */}
               <div
                 ref={timelineRef}
-                className="relative h-20 bg-muji-beige overflow-hidden"
+                className="relative h-20 bg-[#E8E6E1] overflow-hidden rounded-sm"
                 onMouseDown={handleDragStart}
                 onMouseMove={handleDragMove}
                 onMouseUp={handleDragEnd}
@@ -427,8 +427,8 @@ const Timeline = ({ onComplete, initialData = [] }) => {
 
           {/* 활동 목록 */}
           {activities.length > 0 && (
-            <div className="flex-1 min-h-0 overflow-auto space-y-2">
-              <div className="sticky top-0 bg-white z-10 py-2 border-b border-muji-beige mb-3">
+            <div className="flex-1 min-h-0 overflow-auto space-y-2 bg-[#FAFAF8] p-3 rounded-sm">
+              <div className="sticky top-0 bg-[#FAFAF8] z-10 py-2 border-b border-muji-beige mb-3">
                 <h4 className="font-normal text-body-sm text-muji-dark mb-1">
                   기록된 활동
                 </h4>
@@ -443,10 +443,10 @@ const Timeline = ({ onComplete, initialData = [] }) => {
                   <motion.div
                     key={activity.id}
                     layout
-                    className={`flex items-center gap-3 p-3 border-1 transition-colors ${
+                    className={`flex items-center gap-3 p-3 border-1 transition-colors rounded-sm ${
                       isSuspicious
                         ? 'bg-[#FFF5F5] border-[#FFD6D6]'
-                        : 'bg-muji-bg border-muji-beige'
+                        : 'bg-white border-muji-beige'
                     }`}
                   >
                     {/* 의심 체크박스 */}
@@ -539,21 +539,25 @@ const Timeline = ({ onComplete, initialData = [] }) => {
           )}
         </div>
 
-        {/* 다음 버튼 */}
-        {activities.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4"
+        {/* 다음 버튼 - 항상 표시 */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-4"
+        >
+          <Button
+            onClick={handleNext}
+            variant="filled"
+            size="lg"
+            fullWidth
+            disabled={activities.length === 0}
           >
-            <Button onClick={handleNext} variant="filled" size="lg" fullWidth>
-              <span className="flex items-center justify-center gap-2">
-                <span>다음</span>
-                <MujiIcon name="arrow" size={18} strokeWidth={2} />
-              </span>
-            </Button>
-          </motion.div>
-        )}
+            <span className="flex items-center justify-center gap-2">
+              <span>다음</span>
+              <MujiIcon name="arrow" size={18} strokeWidth={2} />
+            </span>
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
