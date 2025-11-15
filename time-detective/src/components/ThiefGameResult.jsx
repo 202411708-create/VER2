@@ -52,24 +52,18 @@ const ThiefGameResult = ({ categories, results, onNext }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-2 gap-4 mb-8">
             <div className="text-center p-6 bg-muji-bg border-1 border-muji-beige">
               <div className="text-2xl font-normal text-muji-dark mb-2">
-                {categories.red.length}
+                {categories.high.length}
               </div>
-              <div className="text-xs font-light text-muji-mid">많이 빼앗는 도둑</div>
+              <div className="text-xs font-light text-muji-mid">시간을 많이 빼앗겨요</div>
             </div>
             <div className="text-center p-6 bg-muji-bg border-1 border-muji-beige">
               <div className="text-2xl font-normal text-muji-dark mb-2">
-                {categories.yellow.length}
+                {categories.low.length}
               </div>
-              <div className="text-xs font-light text-muji-mid">가끔 빼앗는 도둑</div>
-            </div>
-            <div className="text-center p-6 bg-muji-bg border-1 border-muji-beige">
-              <div className="text-2xl font-normal text-muji-dark mb-2">
-                {categories.green.length}
-              </div>
-              <div className="text-xs font-light text-muji-mid">별로 안 빼앗는 도둑</div>
+              <div className="text-xs font-light text-muji-mid">별로 빼앗기지 않아요</div>
             </div>
           </div>
 

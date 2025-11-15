@@ -6,14 +6,14 @@ import { Button, MujiIcon, SectionBox, TimeThiefCard } from './ui';
 
 const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }) => {
   const [categories, setCategories] = useState(
-    initialData || { red: [], yellow: [], green: [] }
+    initialData || { high: [], low: [] }
   );
   const [availableCards, setAvailableCards] = useState([...TIME_THIEF_CARDS]);
   const [draggedCard, setDraggedCard] = useState(null);
 
   // 자동 저장
   useEffect(() => {
-    if (categories.red.length > 0 || categories.yellow.length > 0 || categories.green.length > 0) {
+    if (categories.high.length > 0 || categories.low.length > 0) {
       saveThiefGameData(categories);
     }
   }, [categories]);
@@ -55,19 +55,19 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
 
   // 진행률 계산
   const totalCards = TIME_THIEF_CARDS.length;
-  const placedCards = categories.red.length + categories.yellow.length + categories.green.length;
+  const placedCards = categories.high.length + categories.low.length;
   const progress = (placedCards / totalCards) * 100;
 
   // 결과 분석
   const analyzeResults = () => {
-    const redThieves = categories.red;
-    const estimatedTimeWasted = redThieves.length * 30;
+    const highThieves = categories.high;
+    const estimatedTimeWasted = highThieves.length * 30;
 
     return {
-      topThieves: redThieves.slice(0, 3),
+      topThieves: highThieves.slice(0, 3),
       estimatedTimeWasted,
-      message: redThieves.length > 0
-        ? `이 ${redThieves.length}가지만 줄여도 하루 ${Math.floor(estimatedTimeWasted / 60)}시간 ${estimatedTimeWasted % 60}분을 되찾을 수 있습니다.`
+      message: highThieves.length > 0
+        ? `이 ${highThieves.length}가지만 줄여도 하루 ${Math.floor(estimatedTimeWasted / 60)}시간 ${estimatedTimeWasted % 60}분을 되찾을 수 있습니다.`
         : '시간도둑을 찾아보세요.',
     };
   };
@@ -150,15 +150,53 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* 사용 가능한 카드 */}
+        <div className="grid lg:grid-cols-3 gap-4">
+          {/* 왼쪽: 시간을 많이 빼앗겨요 */}
+          <SectionBox
+            title="시간을 많이 빼앗겨요"
+            subtitle="드래그하여 분류하세요"
+            variant="default"
+            padding="default"
+          >
+            <div
+              onDrop={() => handleDrop('high')}
+              onDragOver={handleDragOver}
+              className={`
+                min-h-[500px]
+                p-4
+                border-2 border-dashed
+                rounded-[4px]
+                transition-colors
+                ${draggedCard ? 'border-[#333333] bg-[#FAF9F5]' : 'border-[#E6E3DD] bg-transparent'}
+              `}
+            >
+              <div className="space-y-2">
+                {categories.high.map((card) => (
+                  <TimeThiefCard
+                    key={card.id}
+                    card={card}
+                    variant="placed"
+                    showDescription={false}
+                    onRemove={() => removeCard(card, 'high')}
+                  />
+                ))}
+                {categories.high.length === 0 && (
+                  <p className="text-center text-xs font-light text-[#6B6B6B] py-8">
+                    카드를 여기에<br />드래그하세요
+                  </p>
+                )}
+              </div>
+            </div>
+          </SectionBox>
+
+          {/* 중앙: 사용 가능한 카드 */}
           <SectionBox
             title="시간도둑 카드"
-            subtitle="카드를 드래그하여 분류해보세요"
+            subtitle="좌우로 드래그하여 분류해보세요"
             variant="white"
             padding="default"
           >
-            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
               <AnimatePresence>
                 {availableCards.map((card) => (
                   <TimeThiefCard
@@ -185,122 +223,43 @@ const ThiefGame = ({ onComplete, initialData = null, suspiciousActivities = [] }
             </div>
           </SectionBox>
 
-          {/* 분류 영역 */}
-          <div className="space-y-4">
-            {/* 많이 빼앗는 도둑 */}
-            <SectionBox
-              title="많이 빼앗는 도둑"
-              subtitle="내 시간을 가장 많이 훔쳐가는 행동"
-              variant="default"
-              padding="default"
+          {/* 오른쪽: 별로 빼앗기지 않아요 */}
+          <SectionBox
+            title="별로 빼앗기지 않아요"
+            subtitle="드래그하여 분류하세요"
+            variant="default"
+            padding="default"
+          >
+            <div
+              onDrop={() => handleDrop('low')}
+              onDragOver={handleDragOver}
+              className={`
+                min-h-[500px]
+                p-4
+                border-2 border-dashed
+                rounded-[4px]
+                transition-colors
+                ${draggedCard ? 'border-[#333333] bg-[#FAF9F5]' : 'border-[#E6E3DD] bg-transparent'}
+              `}
             >
-              <div
-                onDrop={() => handleDrop('red')}
-                onDragOver={handleDragOver}
-                className={`
-                  min-h-[100px]
-                  p-4
-                  border-2 border-dashed
-                  rounded-[4px]
-                  transition-colors
-                  ${draggedCard ? 'border-[#333333] bg-[#FAF9F5]' : 'border-[#E6E3DD] bg-transparent'}
-                `}
-              >
-                <div className="space-y-2">
-                  {categories.red.map((card) => (
-                    <TimeThiefCard
-                      key={card.id}
-                      card={card}
-                      variant="placed"
-                      showDescription={false}
-                      onRemove={() => removeCard(card, 'red')}
-                    />
-                  ))}
-                  {categories.red.length === 0 && (
-                    <p className="text-center text-xs font-light text-[#6B6B6B] py-8">
-                      카드를 여기에 드래그하세요
-                    </p>
-                  )}
-                </div>
+              <div className="space-y-2">
+                {categories.low.map((card) => (
+                  <TimeThiefCard
+                    key={card.id}
+                    card={card}
+                    variant="placed"
+                    showDescription={false}
+                    onRemove={() => removeCard(card, 'low')}
+                  />
+                ))}
+                {categories.low.length === 0 && (
+                  <p className="text-center text-xs font-light text-[#6B6B6B] py-8">
+                    카드를 여기에<br />드래그하세요
+                  </p>
+                )}
               </div>
-            </SectionBox>
-
-            {/* 가끔 빼앗는 도둑 */}
-            <SectionBox
-              title="가끔 빼앗는 도둑"
-              subtitle="때때로 시간을 낭비하게 만드는 행동"
-              variant="default"
-              padding="default"
-            >
-              <div
-                onDrop={() => handleDrop('yellow')}
-                onDragOver={handleDragOver}
-                className={`
-                  min-h-[100px]
-                  p-4
-                  border-2 border-dashed
-                  rounded-[4px]
-                  transition-colors
-                  ${draggedCard ? 'border-[#333333] bg-[#FAF9F5]' : 'border-[#E6E3DD] bg-transparent'}
-                `}
-              >
-                <div className="space-y-2">
-                  {categories.yellow.map((card) => (
-                    <TimeThiefCard
-                      key={card.id}
-                      card={card}
-                      variant="placed"
-                      showDescription={false}
-                      onRemove={() => removeCard(card, 'yellow')}
-                    />
-                  ))}
-                  {categories.yellow.length === 0 && (
-                    <p className="text-center text-xs font-light text-[#6B6B6B] py-8">
-                      카드를 여기에 드래그하세요
-                    </p>
-                  )}
-                </div>
-              </div>
-            </SectionBox>
-
-            {/* 별로 안 빼앗는 도둑 */}
-            <SectionBox
-              title="별로 안 빼앗는 도둑"
-              subtitle="시간 낭비가 거의 없는 행동"
-              variant="default"
-              padding="default"
-            >
-              <div
-                onDrop={() => handleDrop('green')}
-                onDragOver={handleDragOver}
-                className={`
-                  min-h-[100px]
-                  p-4
-                  border-2 border-dashed
-                  rounded-[4px]
-                  transition-colors
-                  ${draggedCard ? 'border-[#333333] bg-[#FAF9F5]' : 'border-[#E6E3DD] bg-transparent'}
-                `}
-              >
-                <div className="space-y-2">
-                  {categories.green.map((card) => (
-                    <TimeThiefCard
-                      key={card.id}
-                      card={card}
-                      variant="placed"
-                      showDescription={false}
-                      onRemove={() => removeCard(card, 'green')}
-                    />
-                  ))}
-                  {categories.green.length === 0 && (
-                    <p className="text-center text-xs font-light text-[#6B6B6B] py-8">
-                      카드를 여기에 드래그하세요
-                    </p>
-                  )}
-                </div>
-              </div>
-            </SectionBox>
-          </div>
+            </div>
+          </SectionBox>
         </div>
 
         {/* 다음 버튼 */}
