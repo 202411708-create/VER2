@@ -7,6 +7,7 @@ import { Button, Card, MujiIcon, SectionBox } from './ui';
 const TimelineResult = ({ activities, stats, onNext }) => {
   const [showUntrackedModal, setShowUntrackedModal] = useState(false);
   const [untrackedCategories, setUntrackedCategories] = useState([]);
+  const [customInput, setCustomInput] = useState('');
 
   // 전체 기록 시간 계산
   const totalHours = stats.reduce((sum, s) => sum + s.value, 0);
@@ -108,6 +109,20 @@ const TimelineResult = ({ activities, stats, onNext }) => {
     setUntrackedCategories(untrackedCategories.filter(c => c.id !== categoryId));
   };
 
+  const handleCustomInput = () => {
+    if (customInput.trim() === '') return;
+
+    const customCategory = {
+      id: `custom-${Date.now()}`,
+      label: customInput.trim(),
+      icon: 'check',
+    };
+
+    setUntrackedCategories([...untrackedCategories, customCategory]);
+    setCustomInput('');
+    setShowUntrackedModal(false);
+  };
+
   return (
     <div className="h-full flex items-center justify-center px-6 bg-muji-bg overflow-auto py-8">
       <div className="w-full max-w-6xl">
@@ -189,11 +204,19 @@ const TimelineResult = ({ activities, stats, onNext }) => {
                 ))}
               </div>
 
-              {generateComparison() && (
-                <div className="p-4 bg-muji-bg border-1 border-muji-light">
-                  <p className="text-body-sm font-light text-muji-mid">
-                    {generateComparison()}
-                  </p>
+              {/* 맞춤형 인사이트 */}
+              {insights.length > 0 && (
+                <div className="space-y-2 mt-3">
+                  {insights.map((insight, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-muji-bg border-l-2 border-muji-mid"
+                    >
+                      <p className="text-body-sm font-light text-muji-mid">
+                        {insight.message}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -254,22 +277,6 @@ const TimelineResult = ({ activities, stats, onNext }) => {
                 </Button>
               </SectionBox>
             </motion.div>
-          )}
-
-          {/* 맞춤형 인사이트 */}
-          {insights.length > 0 && (
-            <div className="space-y-3 mb-6">
-              {insights.map((insight, index) => (
-                <div
-                  key={index}
-                  className="p-4 bg-muji-bg border-l-2 border-muji-mid"
-                >
-                  <p className="text-body-sm font-light text-muji-mid">
-                    {insight.message}
-                  </p>
-                </div>
-              ))}
-            </div>
           )}
 
           {/* Transition to ThiefGame */}
@@ -353,6 +360,40 @@ const TimelineResult = ({ activities, stats, onNext }) => {
                       </button>
                     );
                   })}
+
+                  {/* 구분선 */}
+                  <div className="relative py-3">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-muji-light"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="px-3 bg-white text-xs font-light text-muji-mid">또는</span>
+                    </div>
+                  </div>
+
+                  {/* 직접 입력 */}
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      value={customInput}
+                      onChange={(e) => setCustomInput(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleCustomInput()}
+                      placeholder="직접 입력하기 (예: 멍때림, 산책 등)"
+                      className="w-full px-4 py-3 border border-muji-light rounded-[4px] text-body-sm font-light text-muji-dark placeholder-muji-light focus:outline-none focus:border-muji-mid transition-colors"
+                    />
+                    <Button
+                      onClick={handleCustomInput}
+                      disabled={customInput.trim() === ''}
+                      variant="secondary"
+                      size="md"
+                      fullWidth
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <MujiIcon name="plus" size={16} strokeWidth={2} />
+                        <span>추가하기</span>
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
